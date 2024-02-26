@@ -44,3 +44,9 @@ Dependencies
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
+
+### Flowbite-Svelte
+``` bash
+npm i -D flowbite-svelte flowbite
+```
+
