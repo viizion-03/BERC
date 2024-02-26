@@ -50,3 +50,8 @@ npx tailwindcss init -p
 npm i -D flowbite-svelte flowbite
 ```
 
+### Assets Import
+Allows you to use direct path of an asset without importing it
+```bash
+npm install --save-dev svelte-preprocess-import-assets
+```
