@@ -1,4 +1,4 @@
-import { Databases, Client, Storage, Account } from 'appwrite';
+import { Databases, Client, Storage, Account, ID } from 'appwrite';
 
 /**
  * object containing IDs of all collections in the main database within appwrite
@@ -52,11 +52,38 @@ class AuthService {
 		}
 	}
 
-    // async getUser(){
-    //     return this.auth?.get()
-    //     .then(user => {return user})
-    //     .catch(err => {
+    async getUser(){
+        return this.auth?.get()
+        .then(user => {return user})
+        .catch(err => {return null})
+    }
 
-    //     })
-    // }
+    /**
+     * Creates a new User Account if it doesn't already exist
+     * @param {string} name Display name of the User
+     * @param {string} email User email
+     * @param {string} password New password for the user
+     * @param {string} id Optional - Primary key for the User Account ie. Omang/Passport
+     * @returns object {error, user} 
+     */
+    async createAccount(name, email, password, id = ""){
+        const userID = id ? id : ID.unique();
+        return this.auth?.create(userID, email, password, name)
+        .then(user => {return {error:false, user:user}})
+        .catch(err => {
+            if(err.type === "user_already_exists")
+            return {error : true, errorMessage: "Account already exists"}
+            if(err.type ==="user_count_exceeded")
+            return {error: true, errorMessage: "Account creation limit exceeded, please contact Administrator"}
+        })
+    }
+
+    async updateEmail(email, password){
+        return this.auth?.updateEmail(email, password)
+        .then(user => {return {error: false, user: user}})
+        .catch(err => {
+            if(err.type === "user_unauthorized")
+            return {error: true, errorMessage: "User not logged in"}
+        })
+    }
 }
