@@ -55,3 +55,8 @@ Allows you to use direct path of an asset without importing it
 ```bash
 npm install --save-dev svelte-preprocess-import-assets
 ```
+
+### Appwrite
+``` bash
+npm install appwrite
+```
