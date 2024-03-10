@@ -1,4 +1,4 @@
-import { Databases, Client, Storage, Account, ID } from 'appwrite';
+import { Databases, Client, Storage, Account, ID, AppwriteException } from 'appwrite';
 
 /**
  * object containing IDs of all collections in the main database within appwrite
@@ -30,9 +30,6 @@ const mainDb = {
 	]
 };
 
-const success = { success: true, error: false };
-const fail = { success: false, error: true };
-
 /**
  * object containing the project ID and endpoint of appwrite
  */
@@ -41,26 +38,58 @@ const config = {
 	project: '65cb6350e2738c5d0f96'
 };
 
+const handleError = (/** @type {any}} */ error) => {
+	if (error instanceof AppwriteException) {
+		let message;
+
+		// if(error.type === "general_unauthorized_scope") message = "User Not Logged In"
+		switch (error.type) {
+			case 'general_unauthorized_scope':
+				message = 'User Not Logged In';
+				break;
+			case 'user_already_exists':
+				message = 'A user with the same id, email, or phone already exists';
+				break;
+			case 'user_email_already_exists':
+				message = 'A user with the same email already exists';
+				break;
+			case 'user_phone_already_exists':
+				message = 'A user with the same phone number already exists';
+				break;
+
+			default:
+				message = error.message;
+		}
+
+		return { success: false, errorMessage: message, error };
+	} else {
+		return { success: false, errorMessage: error.message, error };
+	}
+};
+
 export class AuthService {
 	client = new Client();
 	auth;
 
 	constructor() {
-		try {
-			this.client.setEndpoint(config.endPoint);
-			this.client.setProject(config.project);
+		this.client.setEndpoint(config.endPoint);
+		this.client.setProject(config.project);
 
-			this.auth = new Account(this.client);
-		} catch (error) {
-			console.log(error);
-		}
+		this.auth = new Account(this.client);
 	}
 
+	/**
+	 * Gets the User object of the current user
+	 *
+	 * @returns
+	 */
 	async getUser() {
 		try {
-			return this.auth?.get();
+			return this.auth.get().then((user) => {
+				return { success: true, user };
+			});
 		} catch (error) {
-			console.log('Kiss my ass');
+			return { ...handleError(error), user: null };
 		}
 	}
 
@@ -70,25 +99,16 @@ export class AuthService {
 	 * @param {string} email User email
 	 * @param {string} password New password for the user
 	 * @param {string} id Optional - Primary key for the User Account ie. Omang/Passport
-	 * @returns object {error, user}
+	 * @returns
 	 */
 	async createAccount(name, email, password, id = '') {
 		const userID = id ? id : ID.unique();
 		return this.auth
-			?.create(userID, email, password, name)
+			.create(userID, email, password, name)
 			.then((user) => {
-				return { error: false, user: user };
+				return { success: true, user };
 			})
-			.catch((err) => {
-				if (err.type === 'user_already_exists')
-					return { error: true, errorMessage: 'Account already exists', errorObj: err };
-				if (err.type === 'user_count_exceeded')
-					return {
-						error: true,
-						errorMessage: 'Account creation limit exceeded, please contact Administrator',
-						errorObj: err
-					};
-			});
+			.catch((err) => handleError(err));
 	}
 
 	/**
@@ -100,15 +120,11 @@ export class AuthService {
 	 */
 	async updateEmail(email, password) {
 		const promise = this.auth
-			?.updateEmail(email, password)
+			.updateEmail(email, password)
 			.then((user) => {
-				return { ...success, user: user };
+				return { success: true, user };
 			})
-			.catch((err) => {
-				if (err.code === 401) return { error: err, errorMessage: 'User not logged in' };
-
-				return { err: err };
-			});
+			.catch((err) => handleError(err));
 
 		return promise;
 	}
@@ -120,14 +136,11 @@ export class AuthService {
 	 */
 	async updateName(name) {
 		return this.auth
-			?.updateName(name)
+			.updateName(name)
 			.then((user) => {
-				return { ...success, user: user };
+				return { success: true, user };
 			})
-			.catch((err) => {
-				if (err.code === 401) return { error: err, errMessage: 'User not logged in' };
-				return { err: err };
-			});
+			.catch((err) => handleError(err));
 	}
 
 	/**
@@ -137,20 +150,21 @@ export class AuthService {
 	 * @param {string} newPwd New User Password
 	 * @returns
 	 */
-	async updatePassword(oldPwd, newPwd) {
+	async updatePassword(newPwd, oldPwd) {
 		return this.auth
-			?.updatePassword(oldPwd, newPwd)
+			.updatePassword(newPwd, oldPwd)
 			.then((user) => {
-				return { ...success, user: user };
+				return { success: true, user };
 			})
 			.catch((err) => {
-				if (err.code === 401) return { error: err, errMessage: 'User not logged in' };
-				return { err: err };
+				if (err.type === 'user_invalid_credentials')
+					return { success: false, errorMessage: 'Old Password is incorrenct', error: err };
+				handleError(err);
 			});
 	}
 
 	/**
-	 * Update the User's phone number
+	 * Updates the User's phone number
 	 *
 	 * @param {string} contact Phone number with leadind "+" and country code eg +2677819341
 	 * @param {string} password User password
@@ -158,14 +172,11 @@ export class AuthService {
 	 */
 	async updatePhone(contact, password) {
 		return this.auth
-			?.updatePhone(contact, password)
+			.updatePhone(contact, password)
 			.then((user) => {
-				return { ...success, user: user };
+				return { success: true, user };
 			})
-			.catch((err) => {
-				if (err.code === 401) return { error: err, errMessage: 'User not logged in' };
-				return { err: err };
-			});
+			.catch((err) => handleError(err));
 	}
 
 	/**
@@ -174,14 +185,87 @@ export class AuthService {
 	 */
 	async getPrefs() {
 		return this.auth
-			?.getPrefs()
+			.getPrefs()
 			.then((prefs) => {
-				return { ...success, prefs: prefs };
+				return { success: true, prefs };
 			})
-			.catch((err) => {
-				if (err.code === 401) return { error: err, errMessage: 'User not logged in' };
-				return { err: err };
-			});
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Updates the currently logged in User's Preferences
+	 *
+	 * @param {object} prefs Key Value pairs for the user preferences
+	 * @returns
+	 */
+	async updatePrefs(prefs) {
+		return this.auth
+			.updatePrefs(prefs)
+			.then((user) => {
+				return { success: true, user };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Sends the User a temporary secret key for password reset
+	 * and returns email and key to be used by the recovery confirmation function
+	 * 
+	 * Link valid for 1 hour
+	 * @param {string} email User email
+	 * @param {string} url URL to redirect the user back from recovery email
+	 * @returns
+	 */
+	async sendPasswordRecovery(email, url) {
+		return this.auth
+			.createRecovery(email, url)
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((error) => handleError(error));
+	}
+
+	/**
+	 * Completes the user's account password reset
+	 * @param {string} id User's Account ID
+	 * @param {string} secret Valid reset token recieved from creating a password recovery
+	 * @param {string} password The User's new Password must be at least 8 characters
+	 * @param {string} repeatPassword Confirmatory repeat for the user's new password
+	 * @returns
+	 */
+	async confirmPasswordRecovery(id, secret, password, repeatPassword) {
+		return this.auth
+			.updateRecovery(id, secret, password, repeatPassword)
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Get a list of the logged in user's current sessions across all devices
+	 * @returns
+	 */
+	async listSessions() {
+		return this.auth
+			.listSessions()
+			.then((sessions) => {
+				return { success: true, sessions };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Deletes all sessions of the logged in user & removes all session cookies from the end client
+	 * @returns
+	 */
+	async deleteAllSessions() {
+		return this.auth
+			.deleteSessions()
+			.then(() => {
+				return { success: true };
+			})
+			.catch((err) => handleError(err));
 	}
 
 	/**
@@ -193,20 +277,167 @@ export class AuthService {
 	 */
 	async emailLogin(email, password) {
 		return this.auth
-			?.createEmailSession(email, password)
+			.createEmailSession(email, password)
 			.then((session) => {
-				return { ...success, session: session };
+				return { success: true, session };
 			})
-			.catch((err) => {
-				if (err.type === 'user_invalid_credentials')
-					return { error: err, errMessage: 'Invalid email or password' };
-				return { err: err };
-			});
+			.catch((err) => handleError(err));
 	}
 
-	async deleteAllSessions() {
-		return this.auth?.deleteSessions().then((res) => {
-			return { ...success };
-		}).catch(err => {return {success: false, error: err}});
+	/**
+	 * Sends an sms to the user with a secret key.
+	 *
+	 * If the User ID has not been registered, a new user will be created. The returned userID
+	 * should then be used on the phone session confirmation endpoint complete the login process.
+	 *
+	 * Secret sent is only valid for 15 minutes.
+	 * Only 10 requests are allowed within 60 minutes.
+	 *
+	 * @param {string} id User's Account ID
+	 * @param {string} phone User's Phone Number with a leading  "+" sign (e.g., +26771765154)
+	 * @returns
+	 */
+	async phoneLogin(id, phone) {
+		return this.auth
+			.createPhoneSession(id, phone)
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Completes the Phone login process and officially creates the session
+	 *
+	 * @param {string} id User's Account ID
+	 * @param {string} secret Verification Token Received by the User
+	 * @returns
+	 */
+	async confirmPhoneLogin(id, secret) {
+		return this.auth
+			.updatePhoneSession(id, secret)
+			.then((session) => {
+				return { success: true, session };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Gets the session details of a logged in user's session
+	 *
+	 * Using 'current'  returns the current active session being used
+	 * @param {string} sessionId ID of the requested session
+	 * @returns
+	 */
+	async getSession(sessionId) {
+		return this.auth
+			.getSession(sessionId)
+			.then((session) => {
+				return { success: true, session };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Logout the user by deleting a specific session
+	 *
+	 * Use ID to logout from another device
+	 *
+	 * User 'current' to logout from current device
+	 *
+	 * @param {string} sessionId ID of the session to be deleted | 'current' for current session
+	 * @returns
+	 */
+	async logout(sessionId) {
+		return this.auth
+			.deleteSession(sessionId)
+			.then(() => {
+				return { success: true };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Blocks the currently logged in user but their account still remains in the database
+	 *
+	 * This Action is PERMANENT
+	 * @returns
+	 */
+	async updateStatus() {
+		return this.auth
+			.updateStatus()
+			.then((user) => {
+				return { success: true, user };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Sends an verification message to the user's email address to confirm validity
+	 *
+	 * Verification link is valid for 7 days
+	 *
+	 * @param {string} url Url to redirect the user back to the app from verification email
+	 * @returns
+	 */
+	async sendEmailVerification(url) {
+		return this.auth
+			.createVerification(url)
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Completes the email verification process
+	 *
+	 * Use both the userId and secret parameters that were attached to your
+	 * app URL to verify the user email ownership
+	 * @param {string} userId User's Account ID
+	 * @param {string} secret Verification token sent to the user
+	 * @returns
+	 */
+	async confirmEmail(userId, secret) {
+		return this.auth
+			.updateVerification(userId, secret)
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Sends a verification sms to the currently logged in User. use the phone
+	 * verification endpoint to complete the process
+	 *
+	 * Verification code is valid for 15 minutes
+	 * @returns
+	 */
+	async sendPhoneVerification() {
+		return this.auth
+			.createPhoneVerification()
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Completes the user's phone verification process.
+	 *
+	 * Use the userId and secret that were sent to your user's phone number to verify
+	 * the user email ownership
+	 * @param {string} userId User's Account Id
+	 * @param {string} secret Verification token
+	 * @returns
+	 */
+	async confirmPhone(userId, secret) {
+		return this.auth
+			.updatePhoneVerification(userId, secret)
+			.then((token) => {
+				return { success: true, token };
+			})
+			.catch((err) => handleError(err));
 	}
 }

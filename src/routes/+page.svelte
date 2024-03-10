@@ -7,26 +7,35 @@
 
 	function handleClick() {
 		auth
-			.deleteAllSessions()
-			// .emailLogin('test@gmail.com', 'password123')
-			// .updateEmail("random@gmail.com", "password122")
-			// .createAccount('test', 'test@gmail.com', 'password123', 'BW2590081')
+			// .deleteAllSessions()
+			.emailLogin('bigboi@gmail.com', 'password123')
+			// .updateEmail("test@gmail.com", "password123")
+			// .createAccount('bigboi', 'bigBoi@gmail.com', 'password123', 'BW2590082')
 			.then((res) => console.log(res));
 	}
+
 	/**
 	 * @type {import("appwrite").Models.User<import("appwrite").Models.Preferences> | null}
 	 */
-	let user;
-	
+	let currentUser;
 
 	onMount(async () => {
 		auth
 			.getUser()
-			.then((usr) => (user = usr))
-			.catch((err) => console.log({err}));
+			.then(({ user }) => {
+				currentUser = user;
+			})
+			.catch((err) => console.log({ err }));
 	});
 </script>
 
+<div class="text-center bg-green-500 font-semibold py-2">
+	{#if currentUser}
+		<h1>{currentUser.email} in the Inside</h1>
+	{:else}
+		<code>No User Logged In</code>
+	{/if}
+</div>
 <div class="text-center">
 	<Heading tag="h1" class="mb-4" customSize="text-4xl font-extrabold  md:text-5xl lg:text-6xl"
 		>We invest in the world’s potential</Heading
@@ -35,13 +44,11 @@
 		>Here at Flowbite we focus on markets where technology, innovation, and capital can unlock
 		long-term value and drive economic growth.</P
 	>
-
-	<div>
-		{#if user}
-			<h1>{user.name} in the Inside</h1>
-		{:else}
-			<code>No User Logged In</code>
-		{/if}
-	</div>
-	<Button on:click={handleClick}>Learn more</Button>
+	<Button
+		on:click={() => {
+			// auth.sendPasswordRecovery("resag17615@mcuma.com", "http://localhost:5173").then((res) => console.log(res));
+			auth.getSession('current').then(res => console.log(res))
+			// auth.logout('current').then(res => console.log(res))
+		}}>Test Function</Button
+	>
 </div>
