@@ -497,19 +497,19 @@ export class DBService {
 	 */
 	async list(queryList = []) {
 		return this.db
-			.listDocuments(this.databaseId, this.collectionId, queryList)
-			.then((docs) => {
-				return { success: true, docs };
-			})
-			.catch((err) => handleError(err));
+		.listDocuments(this.databaseId, this.collectionId, queryList)
+		.then((docs) => {
+			return { success: true, docs };
+		})
+		.catch((err) => handleError(err));
 	}
-
+	
 	/**
 	 * Updates the attributes of the document  with the provided ID
-	 *
-	 * @param {string} id Document primary ID
-	 * @param {object} data Key value pairs of attributes that are to be updated
-	 * @returns
+	*
+	* @param {string} id Document primary ID
+	* @param {object} data Key value pairs of attributes that are to be updated
+	* @returns
 	 */
 	async update(id, data) {
 		return this.db
@@ -518,28 +518,40 @@ export class DBService {
 				return { success: true, doc };
 			})
 			.catch((err) => handleError(err));
-	}
-
-	/**
-	 * Deletes the Document of the provided ID from the Database
-	 *
-	 * @param {string} id Primary ID of the Document to be deleted
-	 * @returns
-	 */
-	async delete(id) {
-		return this.db
+		}
+		
+		/**
+		 * Deletes the Document of the provided ID from the Database
+		*
+		* @param {string} id Primary ID of the Document to be deleted
+		* @returns
+		*/
+		async delete(id) {
+			return this.db
 			.deleteDocument(this.databaseId, this.collectionId, id)
 			.then(() => {
 				return { success: true };
 			})
 			.catch((err) => handleError(err));
+		}
 	}
-}
-
-export class StorageService {
-	client = new Client();
-	storage = new Storage(this.client);
-
+	
+	export class StorageService {
+		/**
+		 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios')} BucketName
+		 */
+		client = new Client();
+		storage = new Storage(this.client);
+		
+	buckets = {
+		projects: '65d21b3c544d84d4dac7',
+		certificates: '65d0d6b3b3797dd487ad',
+		references: '65d0d428d5a03673f1cd',
+		coverPhotos: '65d0d16c9f7aae6bf573',
+		introAudios: '65d0ceb1c7c45b65566e',
+		avatars: '65d0cbf20c9b0c907251'
+	};
+	
 	constructor() {
 		this.client.setEndpoint(config.endPoint);
 		this.client.setProject(config.project);
@@ -548,127 +560,135 @@ export class StorageService {
 	/**
 	 * Returns a list of files from the specified Storage Bucket
 	 *
-	 * @param {string} bucketId ID of the Bucket to list files from
+	 * @param {BucketName} bucket ID of the Bucket to list files from
 	 * @param {string | undefined} search Search parameter to filter the list of files
 	 * @param {string[]} queryList
 	 * @returns
 	 */
-	async list(bucketId, search = undefined, queryList = []) {
+	async list(bucket, search = undefined, queryList = []) {
 		return this.storage
-			.listFiles(bucketId, queryList, search)
+			.listFiles(this.buckets[bucket], queryList, search)
 			.then((list) => {
 				return { success: true, list };
 			})
 			.catch((err) => handleError(err));
 	}
 
+
 	/**
 	 * Uploads a new file to the Specified Storage Bucket
-	 * 
-	 * @param {string} bucketId ID for the bucket to store the file
+	 *
+	 * @param {BucketName} bucket ID for the bucket to store the file
 	 * @param {File} file Binary file for the file to be uploaded
-	 * @returns 
+	 * @returns
 	 */
-	async create(bucketId, file ){
-		return this.storage.createFile(bucketId, ID.unique(), file)
-		.then(file => {return {success:true, file}})
-		.catch(err => handleError(err))
+	async create(bucket, file) {
+		return this.storage
+			.createFile(this.buckets[bucket], ID.unique(), file)
+			.then((file) => {
+				return { success: true, file };
+			})
+			.catch((err) => handleError(err));
 	}
 
 	/**
 	 * Returns the file object of the requested file
-	 * 
-	 * @param {string} bucketId ID of the  bucket that contains the file
+	 *
+	 * @param {BucketName} bucket ID of the  bucket that contains the file
 	 * @param {string} fileId ID of the requested file
-	 * @returns 
+	 * @returns
 	 */
-	async get(bucketId, fileId){
-		return this.storage.getFile(bucketId, fileId)
-		.then(file => {return {success:true, file}})
-		.catch(err => handleError(err))
-	} 
+	async get(bucket, fileId) {
+		return this.storage
+			.getFile(this.buckets[bucket], fileId)
+			.then((file) => {
+				return { success: true, file };
+			})
+			.catch((err) => handleError(err));
+	}
 
 	/**
 	 * Updates the filename of the specified File
-	 * 
-	 * @param {string} bucketId ID of the bucket that contains the file 
+	 *
+	 * @param {BucketName} bucket ID of the bucket that contains the file
 	 * @param {string} fileId ID of the file to be updated
 	 * @param {string} name New Name for the file
-	 * @returns 
+	 * @returns
 	 */
-	async  update(bucketId, fileId, name){
-		return this.storage.updateFile(bucketId, fileId, name)
-		.then(file => {return {success:true, file}})
-		.catch(err => handleError(err))
+	async update(bucket, fileId, name) {
+		return this.storage
+			.updateFile(this.buckets[bucket], fileId, name)
+			.then((file) => {
+				return { success: true, file };
+			})
+			.catch((err) => handleError(err));
 	}
 
 	/**
 	 * Deletes the specified file from storage
-	 * @param {string} bucketId ID of the bucket containing the file
+	 * @param {BucketName} bucket ID of the bucket containing the file
 	 * @param {string} fileId ID of the file to be deleted
-	 * @returns 
+	 * @returns
 	 */
-	async delete(bucketId, fileId){
-		return this.storage.deleteFile(bucketId, fileId)
-		.then(() => {return {success:true}})
-		.catch(err => handleError(err))
+	async delete(bucket, fileId) {
+		return this.storage
+			.deleteFile(this.buckets[bucket], fileId)
+			.then(() => {
+				return { success: true };
+			})
+			.catch((err) => handleError(err));
 	}
 
 	/**
-	 * Get a file content by its unique ID. 
-	 * 
-	 * The endpoint response return with a 'Content-Disposition: attachment' header that tells 
+	 * Get a file content by its unique ID.
+	 *
+	 * The endpoint response return with a 'Content-Disposition: attachment' header that tells
 	 * the browser to start downloading the file to user downloads directory.
-	 * 
-	 * @param {string} bucketId ID of the bucket containing the file
+	 *
+	 * @param {BucketName} bucket ID of the bucket containing the file
 	 * @param {string} fileId ID of the file to be downloaded
-	 * @returns 
+	 * @returns
 	 */
-	getFileDownload(bucketId, fileId){
+	getFileDownload(bucket, fileId) {
 		try {
-			const url = this.storage.getFileDownload(bucketId, fileId)
-			return {success:true, url} 
+			const url = this.storage.getFileDownload(this.buckets[bucket], fileId);
+			return { success: true, url };
 		} catch (error) {
-			return handleError(error)	
+			return handleError(error);
 		}
 	}
 
 	/**
 	 * Get a file preview Image for image files.
-	 * 
+	 *
 	 * File Icon returned for all other file types
-	 * 
-	 * @param {string} bucketId ID of the bucket containing the file
+	 *
+	 * @param {BucketName} bucket ID of the bucket containing the file
 	 * @param {string} fileId ID of the file to be previewed
-	 * @returns 
+	 * @returns
 	 */
-	getFilePreview(bucketId, fileId ){
+	getFilePreview(bucket, fileId) {
 		try {
-			const url = this.storage.getFilePreview(bucketId, fileId)
-			return {success:true, url}
+			const url = this.storage.getFilePreview(this.buckets[bucket], fileId);
+			return { success: true, url };
 		} catch (error) {
-			return handleError(error)	
+			return handleError(error);
 		}
 	}
-
 
 	/**
 	 * Opens the file in the browser to be Viewed
-	 * 
-	 * @param {string} bucketId ID of the bucket containing the file
+	 *
+	 * @param {BucketName} bucket ID of the bucket containing the file
 	 * @param {string} fileId ID of the file to be Viewed
-	 * @returns 
+	 * @returns
 	 */
-	getFileView(bucketId, fileId){
+	getFileView(bucket, fileId) {
 		try {
-			const url = this.storage.getFileView(bucketId,fileId)
-			return {success:true, url}
+			const url = this.storage.getFileView(this.buckets[bucket], fileId);
+			return { success: true, url };
 		} catch (error) {
-			return handleError(error)	
+			return handleError(error);
 		}
 	}
-
-
-	
 }
-
