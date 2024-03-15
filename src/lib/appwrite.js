@@ -1,34 +1,4 @@
-import { Databases, Client, Storage, Account, ID, AppwriteException } from 'appwrite';
-
-/**
- * object containing IDs of all collections in the main database within appwrite
- */
-const mainDb = {
-	databaseID: '65cffe2a65e4ac1caf55',
-	collections: [
-		{
-			messages: '65da2e313e61cd9ec368',
-			chatRooms: '65da1ecbccdd8a19944c',
-			forumComments: '65da1b313e4156c62a31',
-			forums: '65da1a114ebcee58ef43',
-			vacancyNotifications: '65da184a880fecbb724a',
-			applicationNotes: '65da13b8d63166feaa66',
-			vacancyApplications: '65da11ddcbc8ec1250bb',
-			vacancies: '65da072f315d1ef8c141',
-			notifications: '65d932d5a7bf501dd37c',
-			socialMediaAccounts: '65d9304ed31d5d1c9509',
-			organizations: '65d925ab10d43ec51b3c',
-			userLanguages: '65d92425ed4facc9106e',
-			workExperiences: '65d9161ab43a30cb78ca',
-			projects: '65d219a74329731159d2',
-			signedReferences: '65d218bb9da9a2e3456d',
-			siteReferences: '65d20e28e850f1686f1e',
-			educations: '65d0e7b4a60393b375ae',
-			userBiographies: '65d0d74f2a513cb8337b',
-			userProfiles: '65cffe8b792bb31cbb45'
-		}
-	]
-};
+import { Databases, Client, Storage, Account, ID, AppwriteException, Query } from 'appwrite';
 
 /**
  * object containing the project ID and endpoint of appwrite
@@ -42,7 +12,6 @@ const handleError = (/** @type {any}} */ error) => {
 	if (error instanceof AppwriteException) {
 		let message;
 
-		// if(error.type === "general_unauthorized_scope") message = "User Not Logged In"
 		switch (error.type) {
 			case 'general_unauthorized_scope':
 				message = 'User Not Logged In';
@@ -56,6 +25,9 @@ const handleError = (/** @type {any}} */ error) => {
 			case 'user_phone_already_exists':
 				message = 'A user with the same phone number already exists';
 				break;
+
+			case 'document_not_found':
+				message = 'Record not found';
 
 			default:
 				message = error.message;
@@ -210,7 +182,7 @@ export class AuthService {
 	/**
 	 * Sends the User a temporary secret key for password reset
 	 * and returns email and key to be used by the recovery confirmation function
-	 * 
+	 *
 	 * Link valid for 1 hour
 	 * @param {string} email User email
 	 * @param {string} url URL to redirect the user back from recovery email
@@ -441,3 +413,262 @@ export class AuthService {
 			.catch((err) => handleError(err));
 	}
 }
+export const mainDb = {
+	databaseID: '65cffe2a65e4ac1caf55',
+	collections: {
+		messages: '65da2e313e61cd9ec368',
+		chatRooms: '65da1ecbccdd8a19944c',
+		forumComments: '65da1b313e4156c62a31',
+		forums: '65da1a114ebcee58ef43',
+		vacancyNotifications: '65da184a880fecbb724a',
+		applicantnNotes: '65da13b8d63166feaa66',
+		vacancyApplications: '65da11ddcbc8ec1250bb',
+		vacancies: '65da072f315d1ef8c141',
+		notifications: '65d932d5a7bf501dd37c',
+		socialMediaAccounts: '65d9304ed31d5d1c9509',
+		organizations: '65d925ab10d43ec51b3c',
+		userLanguages: '65d92425ed4facc9106e',
+		workExperiences: '65d9161ab43a30cb78ca',
+		projects: '65d219a74329731159d2',
+		signedReferences: '65d218bb9da9a2e3456d',
+		siteReferences: '65d20e28e850f1686f1e',
+		educations: '65d0e7b4a60393b375ae',
+		userBiographies: '65d0d74f2a513cb8337b',
+		userProfiles: '65cffe8b792bb31cbb45'
+	}
+};
+
+export class DBService {
+	client = new Client();
+	db = new Databases(this.client);
+
+	databaseId = '';
+	collectionId = '';
+
+	/**
+	 * object containing IDs of all collections in the main database within appwrite
+	 */
+	constructor() {
+		this.client.setEndpoint(config.endPoint);
+		this.client.setProject(config.project);
+		this.databaseId = mainDb.databaseID;
+	}
+	/**
+	 *	@param {object} data Key value pairs based on collection attributes
+	 * @param {string} id Document primary ID, if not entred ID.unique() is used to generate a new primary key
+	 * @returns
+	 */
+	// * @param {{omangPassport:string, firstname:string, dob:string, nationality:string, surname:string}} data Profile Object containing key value pairs
+	async create(data, id = '') {
+		const docId = id ? id : ID.unique();
+
+		return this.db
+			.createDocument(this.databaseId, this.collectionId, docId, data)
+			.then((doc) => {
+				return { success: true, doc };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Retrieves a document of the specified ID
+	 *
+	 * The list of queries applies when configuring which attributes should be returned using
+	 * the Select function
+	 *
+	 * @param {string} documentId ID of the document
+	 * @param {string[]} queryList list of Appwrite queries mainly for the Select function (attributes)
+	 * @returns
+	 */
+	async get(documentId, queryList = []) {
+		return this.db
+			.getDocument(this.databaseId, this.collectionId, documentId, queryList)
+			.then((doc) => {
+				return { success: true, doc };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Returns a list of documents that match with the specified queries passed into the function
+	 *
+	 * @param {string[]} queryList List of queries generated using the Query function from appwrite
+	 * @returns
+	 */
+	async list(queryList = []) {
+		return this.db
+			.listDocuments(this.databaseId, this.collectionId, queryList)
+			.then((docs) => {
+				return { success: true, docs };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Updates the attributes of the document  with the provided ID
+	 *
+	 * @param {string} id Document primary ID
+	 * @param {object} data Key value pairs of attributes that are to be updated
+	 * @returns
+	 */
+	async update(id, data) {
+		return this.db
+			.updateDocument(this.databaseId, this.collectionId, id, data)
+			.then((doc) => {
+				return { success: true, doc };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Deletes the Document of the provided ID from the Database
+	 *
+	 * @param {string} id Primary ID of the Document to be deleted
+	 * @returns
+	 */
+	async delete(id) {
+		return this.db
+			.deleteDocument(this.databaseId, this.collectionId, id)
+			.then(() => {
+				return { success: true };
+			})
+			.catch((err) => handleError(err));
+	}
+}
+
+export class StorageService {
+	client = new Client();
+	storage = new Storage(this.client);
+
+	constructor() {
+		this.client.setEndpoint(config.endPoint);
+		this.client.setProject(config.project);
+	}
+
+	/**
+	 * Returns a list of files from the specified Storage Bucket
+	 *
+	 * @param {string} bucketId ID of the Bucket to list files from
+	 * @param {string | undefined} search Search parameter to filter the list of files
+	 * @param {string[]} queryList
+	 * @returns
+	 */
+	async list(bucketId, search = undefined, queryList = []) {
+		return this.storage
+			.listFiles(bucketId, queryList, search)
+			.then((list) => {
+				return { success: true, list };
+			})
+			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Uploads a new file to the Specified Storage Bucket
+	 * 
+	 * @param {string} bucketId ID for the bucket to store the file
+	 * @param {File} file Binary file for the file to be uploaded
+	 * @returns 
+	 */
+	async create(bucketId, file ){
+		return this.storage.createFile(bucketId, ID.unique(), file)
+		.then(file => {return {success:true, file}})
+		.catch(err => handleError(err))
+	}
+
+	/**
+	 * Returns the file object of the requested file
+	 * 
+	 * @param {string} bucketId ID of the  bucket that contains the file
+	 * @param {string} fileId ID of the requested file
+	 * @returns 
+	 */
+	async get(bucketId, fileId){
+		return this.storage.getFile(bucketId, fileId)
+		.then(file => {return {success:true, file}})
+		.catch(err => handleError(err))
+	} 
+
+	/**
+	 * Updates the filename of the specified File
+	 * 
+	 * @param {string} bucketId ID of the bucket that contains the file 
+	 * @param {string} fileId ID of the file to be updated
+	 * @param {string} name New Name for the file
+	 * @returns 
+	 */
+	async  update(bucketId, fileId, name){
+		return this.storage.updateFile(bucketId, fileId, name)
+		.then(file => {return {success:true, file}})
+		.catch(err => handleError(err))
+	}
+
+	/**
+	 * Deletes the specified file from storage
+	 * @param {string} bucketId ID of the bucket containing the file
+	 * @param {string} fileId ID of the file to be deleted
+	 * @returns 
+	 */
+	async delete(bucketId, fileId){
+		return this.storage.deleteFile(bucketId, fileId)
+		.then(() => {return {success:true}})
+		.catch(err => handleError(err))
+	}
+
+	/**
+	 * Get a file content by its unique ID. 
+	 * 
+	 * The endpoint response return with a 'Content-Disposition: attachment' header that tells 
+	 * the browser to start downloading the file to user downloads directory.
+	 * 
+	 * @param {string} bucketId ID of the bucket containing the file
+	 * @param {string} fileId ID of the file to be downloaded
+	 * @returns 
+	 */
+	getFileDownload(bucketId, fileId){
+		try {
+			const url = this.storage.getFileDownload(bucketId, fileId)
+			return {success:true, url} 
+		} catch (error) {
+			return handleError(error)	
+		}
+	}
+
+	/**
+	 * Get a file preview Image for image files.
+	 * 
+	 * File Icon returned for all other file types
+	 * 
+	 * @param {string} bucketId ID of the bucket containing the file
+	 * @param {string} fileId ID of the file to be previewed
+	 * @returns 
+	 */
+	getFilePreview(bucketId, fileId ){
+		try {
+			const url = this.storage.getFilePreview(bucketId, fileId)
+			return {success:true, url}
+		} catch (error) {
+			return handleError(error)	
+		}
+	}
+
+
+	/**
+	 * Opens the file in the browser to be Viewed
+	 * 
+	 * @param {string} bucketId ID of the bucket containing the file
+	 * @param {string} fileId ID of the file to be Viewed
+	 * @returns 
+	 */
+	getFileView(bucketId, fileId){
+		try {
+			const url = this.storage.getFileView(bucketId,fileId)
+			return {success:true, url}
+		} catch (error) {
+			return handleError(error)	
+		}
+	}
+
+
+	
+}
+
