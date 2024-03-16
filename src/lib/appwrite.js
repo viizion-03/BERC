@@ -444,6 +444,7 @@ export class DBService {
 
 	databaseId = '';
 	collectionId = '';
+	requiredAttributes = {}
 
 	/**
 	 * object containing IDs of all collections in the main database within appwrite
@@ -463,7 +464,7 @@ export class DBService {
 		const docId = id ? id : ID.unique();
 
 		return this.db
-			.createDocument(this.databaseId, this.collectionId, docId, data)
+			.createDocument(this.databaseId, this.collectionId, docId, {...this.requiredAttributes, ...data })
 			.then((doc) => {
 				return { success: true, doc };
 			})
@@ -580,7 +581,7 @@ export class DBService {
 	 * Uploads a new file to the Specified Storage Bucket
 	 *
 	 * @param {BucketName} bucket ID for the bucket to store the file
-	 * @param {Object} file Binary file for the file to be uploaded
+	 * @param {File} file Binary file for the file to be uploaded
 	 * @returns
 	 */
 	async create(bucket, file) {
