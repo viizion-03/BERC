@@ -538,7 +538,7 @@ export class DBService {
 	
 	export class StorageService {
 		/**
-		 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios')} BucketName
+		 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios'|'messageMedia')} BucketName
 		 */
 		client = new Client();
 		storage = new Storage(this.client);
@@ -549,7 +549,8 @@ export class DBService {
 		references: '65d0d428d5a03673f1cd',
 		coverPhotos: '65d0d16c9f7aae6bf573',
 		introAudios: '65d0ceb1c7c45b65566e',
-		avatars: '65d0cbf20c9b0c907251'
+		avatars: '65d0cbf20c9b0c907251',
+		messageMedia: "65f4def1e7eec7823f4b"
 	};
 	
 	constructor() {
@@ -579,7 +580,7 @@ export class DBService {
 	 * Uploads a new file to the Specified Storage Bucket
 	 *
 	 * @param {BucketName} bucket ID for the bucket to store the file
-	 * @param {File} file Binary file for the file to be uploaded
+	 * @param {Object} file Binary file for the file to be uploaded
 	 * @returns
 	 */
 	async create(bucket, file) {
