@@ -517,7 +517,7 @@ export class DBService {
 	* @param {object} data Key value pairs of attributes that are to be updated
 	* @returns
 	 */
-	async update(id, data) {
+	async update(id, data={}) {
 		return this.db
 			.updateDocument(this.databaseId, this.collectionId, id, {...this.data, ...data})
 			.then((doc) => {
