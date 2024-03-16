@@ -40,7 +40,6 @@ export class UserProfileService extends DBService {
 	 * @property {string} $collectionId - The user's collection ID.
 	 */
 
-	requiredAttributes;
 	/** @type {UserProfile | undefined} */
 	data;
 
@@ -49,10 +48,48 @@ export class UserProfileService extends DBService {
 		this.collectionId = mainDb.collections.userProfiles;
 		this.requiredAttributes = { omangPassport, firstname, dob, surname, nationality };
 	}
+
+	/**
+	 * Creates a new Account then proceeds to create a User Profile
+     * 
+     * If the desire is to only create a profile. Use the Create() function
+     * 
+     * For just creating an Account on appwrite. Use the CreateAccount() function in the AuthService class
+	 *
+	 * @param {string} username Name for the user's account
+	 * @param {string} email New User's email
+	 * @param {string} password Password for the User
+	 */
+	async signUp(username, email, password) {
+		const auth = new AuthService();
+		return auth
+			.createAccount(username, email, password, this.requiredAttributes.omangPassport)
+			.then((res) => {
+				if (res.success) {
+					const { user } = res;
+					this.create(this.data, this.requiredAttributes.omangPassport).then((res) => {
+						if (res.success) return { success: true, profile: res.doc, user: user };
+					});
+				}
+			});
+	}
 }
 
 export class MessageService extends DBService {
-	requiredAttributes;
+	/**
+	 * @typedef {Object} AppwriteFile
+	 * @property {string} $id - The unique ID of the file.
+	 * @property {string} bucketId - The ID of the bucket where the file is stored.
+	 * @property {string} $createdAt - The timestamp when the file was created.
+	 * @property {string} $updatedAt - The timestamp when the file was last updated.
+	 * @property {string[]} $permissions - An array of permissions for the file.
+	 * @property {string} name - The name of the file.
+	 * @property {string} signature - The signature of the file.
+	 * @property {string} mimeType - The MIME type of the file.
+	 * @property {number} sizeOriginal - The original size of the file in bytes.
+	 * @property {number} chunksTotal - The total number of chunks the file is divided into.
+	 * @property {number} chunksUploaded - The number of chunks that have been uploaded.
+	 */
 
 	/**
 	 *
@@ -63,27 +100,25 @@ export class MessageService extends DBService {
 	constructor(type, senderId, chatRoomId) {
 		super();
 		this.collectionId = mainDb.collections.messages;
-		this.requiredAttributes = { type, senderProfile:senderId, chatRoom:chatRoomId};
+		this.requiredAttributes = { type, senderProfile: senderId, chatRoom: chatRoomId };
 	}
 
 	/**
-     * Uploads the Media into storage then Creates a Message Record
+	 * Uploads the Media into storage then Creates a Message Record
 	 *
 	 * @param {string} text
 	 * @param {File} file
 	 * @returns
 	 */
-	async createUpload(file,text="") {
+	async createUpload(file, text = '') {
 		const storage = new StorageService();
 
-		return storage
-			.create('messageMedia', file)
-			.then((res) => {
-				return this.create({ mediaSID: res.file.$id, ...this.requiredAttributes,text });
-			})
-			.catch((error) => {
-				return { success: false, errorMessage: error.message, error };
-			});
+		return storage.create('messageMedia', file).then((res) => {
+			return this.create({ mediaSID: res.file.$id, text });
+		});
+		// 	.catch((error) => {
+		// 		return { success: false, errorMessage: error.message, error };
+		// 	});
 
 		// const senderId = await new AuthService().getUser().then(res => res.user.$id)
 		// if(senderId){

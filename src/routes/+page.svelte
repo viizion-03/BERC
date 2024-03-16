@@ -1,5 +1,5 @@
 <script>
-	import { Heading, P, Button, Input } from 'flowbite-svelte';
+	import { Heading, P, Button, Input, Fileupload } from 'flowbite-svelte';
 	import { AuthService, StorageService } from '$lib/appwrite';
 	import { UserProfileService, MessageService } from '$lib/backend-services';
 	import { onMount } from 'svelte';
@@ -37,24 +37,29 @@
 		long-term value and drive economic growth.</P
 	>
 	<div>
-		<Input type="file" id="uploader" bind:files={uploaderFiles} bind:this={uploader} />
 		<Input type="text" placeholder="message" bind:value={messageText} />
+		<!-- <Input type="file" bind:files={uploaderFiles} id="media" /> -->
+		<Fileupload bind:files={uploaderFiles} />
 	</div>
 
 	<Button
 		on:click={() => {
-			const messageService = new MessageService('text', currentUser?.$id, '65f4ff9a30c20a601259');
-			if (uploaderFiles)
-				messageService
-					.createUpload( uploaderFiles[0],messageText)
-					.then((res) => console.log(res));
-			else {
-				console.log({test:messageText, ...messageService.requiredAttributes});
-				messageService
-					// .create({ text: messageText, type: messageService.requiredAttributes.type, senderProfile: currentUser?.$id, chatRoom: '65f4ff9a30c20a601259' })
-					.create({ text: messageText,...messageService.requiredAttributes,})
-					.then((res) => console.log(res));
-			}
+			// const messageService = new MessageService('text', currentUser?.$id, '65f4ff9a30c20a601259');
+
+			// if (uploaderFiles)
+			// 	messageService
+			// 		.createUpload( uploaderFiles[0],messageText)
+			// 		.then((res) => console.log(res));
+			// else {
+			// 	messageService
+			// 		// .create({ text: messageText, type: messageService.requiredAttributes.type, senderProfile: currentUser?.$id, chatRoom: '65f4ff9a30c20a601259' })
+			// 		.create({ text: messageText})
+			// 		.then((res) => console.log(res));
+			// }
+
+			new UserProfileService('GH341304921', 'Waid', 'Maloney', '06/30/1992', 'Zambia')
+				.signUp('WAIDE', 'waide@vmail.com', 'password123')
+				.then((res) => console.log(res));
 
 			// const profile = new UserProfileService(currentUser?.$id, "Omon", "Rizu","02/11/2001", "Botswana" );
 			// profile.create({...profile.requiredAttributes}, currentUser?.$id).then(res => console.log(res))
