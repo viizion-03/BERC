@@ -447,6 +447,11 @@ export class DBService {
 	requiredAttributes = {}
 
 	/**
+	 * @type {object | undefined}
+	 */
+	data
+
+	/**
 	 * object containing IDs of all collections in the main database within appwrite
 	 */
 	constructor() {
@@ -460,11 +465,11 @@ export class DBService {
 	 * @returns
 	 */
 	// * @param {{omangPassport:string, firstname:string, dob:string, nationality:string, surname:string}} data Profile Object containing key value pairs
-	async create(data, id = '') {
+	async create(data={}, id = '') {
 		const docId = id ? id : ID.unique();
 
 		return this.db
-			.createDocument(this.databaseId, this.collectionId, docId, {...this.requiredAttributes, ...data })
+			.createDocument(this.databaseId, this.collectionId, docId, {...this.requiredAttributes, ...data,...this.data })
 			.then((doc) => {
 				return { success: true, doc };
 			})

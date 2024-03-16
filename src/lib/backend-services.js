@@ -50,11 +50,19 @@ export class UserProfileService extends DBService {
 	}
 
 	/**
+	 *
+	 * @param {UserProfile} data
+	 */
+	setData(data) {
+		this.data = { ...this.data, ...data };
+	}
+
+	/**
 	 * Creates a new Account then proceeds to create a User Profile
-     * 
-     * If the desire is to only create a profile. Use the Create() function
-     * 
-     * For just creating an Account on appwrite. Use the CreateAccount() function in the AuthService class
+	 *
+	 * If the desire is to only create a profile. Use the Create() function
+	 *
+	 * For just creating an Account on appwrite. Use the CreateAccount() function in the AuthService class
 	 *
 	 * @param {string} username Name for the user's account
 	 * @param {string} email New User's email
@@ -77,21 +85,6 @@ export class UserProfileService extends DBService {
 
 export class MessageService extends DBService {
 	/**
-	 * @typedef {Object} AppwriteFile
-	 * @property {string} $id - The unique ID of the file.
-	 * @property {string} bucketId - The ID of the bucket where the file is stored.
-	 * @property {string} $createdAt - The timestamp when the file was created.
-	 * @property {string} $updatedAt - The timestamp when the file was last updated.
-	 * @property {string[]} $permissions - An array of permissions for the file.
-	 * @property {string} name - The name of the file.
-	 * @property {string} signature - The signature of the file.
-	 * @property {string} mimeType - The MIME type of the file.
-	 * @property {number} sizeOriginal - The original size of the file in bytes.
-	 * @property {number} chunksTotal - The total number of chunks the file is divided into.
-	 * @property {number} chunksUploaded - The number of chunks that have been uploaded.
-	 */
-
-	/**
 	 *
 	 * @param {"text"|"audio"|"img"|"doc"} type
 	 * @param {string} chatRoomId ID of the chatroom to send the message in
@@ -113,25 +106,22 @@ export class MessageService extends DBService {
 	async createUpload(file, text = '') {
 		const storage = new StorageService();
 
-		return storage.create('messageMedia', file).then((res) => {
-			return this.create({ mediaSID: res.file.$id, text });
-		});
-		// 	.catch((error) => {
-		// 		return { success: false, errorMessage: error.message, error };
-		// 	});
-
-		// const senderId = await new AuthService().getUser().then(res => res.user.$id)
-		// if(senderId){
-		// }else{
-		//     return {success:false, errorMessage: "No user logged in."}
-		// }
+		return storage
+			.create('messageMedia', file)
+			.then((res) => {
+				return this.create({ mediaSID: res.file.$id, text });
+			})
+			.catch((error) => {
+				return { success: false, errorMessage: error.message, error };
+			});
 	}
 }
 
 export class ChatRoomService extends DBService {
-	constructor() {
+	constructor(name = '') {
 		super();
 		this.collectionId = mainDb.collections.chatRooms;
+		this.requiredAttributes = { name };
 	}
 }
 
@@ -227,22 +217,122 @@ export class SignedReferenceService extends DBService {
 }
 
 export class SiteReferenceService extends DBService {
-	constructor() {
+	/**
+	 * @typedef {Object} SiteReference
+	 * @property {string} relationshipToCandidate - The relationship to the candidate (required)
+	 * @property {string} [candidateExperience] - The candidate's experience
+	 * @property {string[]} [candidateCapabilities] - The candidate's capabilities
+	 * @property {string} [impactCreated] - The impact created
+	 * @property {string[]} [personalQualities] - The personal qualities
+	 * @property {string} [potential] - The potential
+	 * @property {string} summary - The summary (required)
+	 * @property {string} [otherInformation] - Other information
+	 * @property {workExperience} workExperience - The work experience associated with this site reference
+	 * @property {authorProfile} authorProfile - The Account that created the site reference
+	 * @property {Biography} userBiography - The Biography for the accout to which the reference belongs to
+	 */
+
+	// /**@type {SiteReference | undefined} */
+	// data;
+	constructor(relationshipToCandidate = "", summary="", authorProfile='', userBiography ="") {
 		super();
 		this.collectionId = mainDb.collections.siteReferences;
+		this.requiredAttributes = {relationshipToCandidate, summary, authorProfile, userBiography}
 	}
+
+	/**
+	 * Sets the Attributes within the Site References Collection 
+	 * @param {SiteReference} data 
+	 */
+	setData(data){
+		this.data = {...this.data, ...data}
+	}
+
 }
 
 export class EducationService extends DBService {
-	constructor() {
+	/**
+	 * @typedef {Object} Education
+	 * @property {string} qualification - The qualification obtained (required)
+	 * @property {string} institution - The educational institution (required)
+	 * @property {string} startDate - The start date (required)
+	 * @property {string} [endDate] - The end date
+	 * @property {boolean} isSuccessfullyCompleted - Indicates whether the education was successfully completed
+	 * @property {string} [certificatesID] - The certificate ID
+	 * @property {Biography | string} userBiography - The user biography associated with this education
+	 */
+
+	/**@type {Education | undefined} */
+	data;
+	constructor(qualification = '', institution = '', startDate = '', biographyId = '') {
 		super();
 		this.collectionId = mainDb.collections.educations;
+		this.requiredAttributes = { qualification, institution, startDate, userBiography: biographyId };
+	}
+
+	/**
+	 * Set the attributes for the Education Collection
+	 * @param {Education} data
+	 */
+	setData(data) {
+		this.data = { ...this.data, ...data };
+	}
+
+	/**
+	 * Uploads the document into Storage then proceeds to create a Record in the Educations collection
+	 *
+	 * @param {File} file
+	 * @param {Education|Object} data
+	 * @returns
+	 */
+	async createUpload(file, data = {}) {
+		const storage = new StorageService();
+
+		return storage
+			.create('certificates', file)
+			.then((res) => this.create({ certificateSID: res.file.$id, ...this.data, ...data }))
+			.catch((err) => handleError(err));
 	}
 }
 
 export class UserBiographyService extends DBService {
-	constructor() {
+	/**
+	 * @typedef {Object} Biography
+	 * @property {string} [background] - Background information
+	 * @property {string[]} [contributions] - Contributions
+	 * @property {string[]} [strengths] - Strengths
+	 * @property {string[]} [weaknesses] - Weaknesses
+	 * @property {string[]} [accomplishments] - Accomplishments
+	 * @property {string[]} [coreValues] - Core values
+	 * @property {string} [aspirations] - Aspirations
+	 * @property {string[]} [fieldsOfInterest] - Fields of interest
+	 * @property {SiteReference[]} [siteReferences] - Site references
+	 * @property {Education[] | string[]} [educations] - Education details
+	 * @property {signedReferences[]} [signedReferences] - Signed references
+	 * @property {workExperiences[]} [workExperiences] - Work experiences
+	 * @property {UserProfile | string} [userProfile] - User profile
+	 */
+
+	/**@type {Biography | undefined} */
+	data;
+	constructor(userId) {
 		super();
 		this.collectionId = mainDb.collections.userBiographies;
+		this.requiredAttributes = { userProfile: userId };
 	}
+
+	/**
+	 *	Sets the attributes within the User Biography Collection
+	 * @param {Biography} data
+	 */
+	setData(data) {
+		this.data = { ...this.data, ...data };
+	}
+}
+
+/**
+ * @param {{ message: string;success:boolean;error:Object }} error
+ */
+function handleError(error) {
+	return { success: false, errorMessage: error.message, error };
 }
