@@ -38,6 +38,7 @@ export class UserProfileService extends DBService {
 	 * @property {Object[]} forums - The user's forums.
 	 * @property {string} $databaseId - The user's database ID.
 	 * @property {string} $collectionId - The user's collection ID.
+	 * @property {SiteReference} siteReferences - References Written by the User for other Users
 	 */
 
 	constructor(omangPassport = '', firstname = '', surname = '', dob = '', nationality = '') {
@@ -207,9 +208,45 @@ export class ProjectService extends DBService {
 }
 
 export class SignedReferenceService extends DBService {
-	constructor() {
+	/**
+	 * @typedef {Object} SignedReference
+	 * @property {string} docsID - The document ID (required)
+	 * @property {string} authorFullname - The author's full name (required)
+	 * @property {string[]} [authorContacts] - The author's contacts
+	 * @property {workExperience} workExperience - The work experience associated with this signed reference
+	 * @property {Biography} userBiography - The biography to which this reference is for
+	 */
+
+	constructor(authorFullname = '', userBiography = '') {
 		super();
 		this.collectionId = mainDb.collections.signedReferences;
+		this.requiredAttributes = { authorFullname, userBiography };
+	}
+
+	/**
+	 *	Sets the attributes of the Signed Reference Collection
+	 * @param {SignedReference} data
+	 */
+	setData(data) {
+		this.data = { ...this.data, ...data };
+	}
+
+	/**
+	 * Uploads the Reference Document to Storage then proceeds to record a transaction in the database
+	 *
+	 * @param {File} file Reference File to be uploaded (.docx, pdf)
+	 * @param {SignedReference|Object} data
+	 * @returns
+	 */
+	async createUpload(file, data = {}) {
+		const storage = new StorageService();
+		const uploadedFile = await storage.create('references', file);
+		if (uploadedFile.success && 'file' in uploadedFile) {
+			return this.create({ ...data, docSID: uploadedFile.file.$id });
+		}
+		else{
+			return {...uploadedFile}
+		}
 	}
 }
 
@@ -304,7 +341,7 @@ export class UserBiographyService extends DBService {
 	 * @property {string[]} [fieldsOfInterest] - Fields of interest
 	 * @property {SiteReference[]} [siteReferences] - Site references
 	 * @property {Education[] | string[]} [educations] - Education details
-	 * @property {signedReferences[]} [signedReferences] - Signed references
+	 * @property {SignedReference[]} [signedReferences] - Signed references
 	 * @property {workExperiences[]} [workExperiences] - Work experiences
 	 * @property {UserProfile | string} [userProfile] - User profile
 	 */
