@@ -469,7 +469,7 @@ export class DBService {
 		const docId = id ? id : ID.unique();
 
 		return this.db
-			.createDocument(this.databaseId, this.collectionId, docId, {...this.requiredAttributes, ...data,...this.data })
+			.createDocument(this.databaseId, this.collectionId, docId, {...this.requiredAttributes,...this.data, ...data })
 			.then((doc) => {
 				return { success: true, doc };
 			})
@@ -519,7 +519,7 @@ export class DBService {
 	 */
 	async update(id, data) {
 		return this.db
-			.updateDocument(this.databaseId, this.collectionId, id, data)
+			.updateDocument(this.databaseId, this.collectionId, id, {...this.data, ...data})
 			.then((doc) => {
 				return { success: true, doc };
 			})

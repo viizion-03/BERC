@@ -40,9 +40,6 @@ export class UserProfileService extends DBService {
 	 * @property {string} $collectionId - The user's collection ID.
 	 */
 
-	/** @type {UserProfile | undefined} */
-	data;
-
 	constructor(omangPassport = '', firstname = '', surname = '', dob = '', nationality = '') {
 		super();
 		this.collectionId = mainDb.collections.userProfiles;
@@ -73,10 +70,10 @@ export class UserProfileService extends DBService {
 		return auth
 			.createAccount(username, email, password, this.requiredAttributes.omangPassport)
 			.then((res) => {
-				if (res.success) {
+				if (res.success && 'user' in res) {
 					const { user } = res;
 					this.create(this.data, this.requiredAttributes.omangPassport).then((res) => {
-						if (res.success) return { success: true, profile: res.doc, user: user };
+						if (res.success && 'doc' in res) return { success: true, profile: res.doc, user: user };
 					});
 				}
 			});
@@ -109,7 +106,7 @@ export class MessageService extends DBService {
 		return storage
 			.create('messageMedia', file)
 			.then((res) => {
-				return this.create({ mediaSID: res.file.$id, text });
+				if ('file' in res) return this.create({ mediaSID: res.file.$id, text });
 			})
 			.catch((error) => {
 				return { success: false, errorMessage: error.message, error };
@@ -228,26 +225,25 @@ export class SiteReferenceService extends DBService {
 	 * @property {string} summary - The summary (required)
 	 * @property {string} [otherInformation] - Other information
 	 * @property {workExperience} workExperience - The work experience associated with this site reference
-	 * @property {authorProfile} authorProfile - The Account that created the site reference
+	 * @property {UserProfile} authorProfile - The Account that created the site reference
 	 * @property {Biography} userBiography - The Biography for the accout to which the reference belongs to
 	 */
 
 	// /**@type {SiteReference | undefined} */
 	// data;
-	constructor(relationshipToCandidate = "", summary="", authorProfile='', userBiography ="") {
+	constructor(relationshipToCandidate = '', summary = '', authorProfile = '', userBiography = '') {
 		super();
 		this.collectionId = mainDb.collections.siteReferences;
-		this.requiredAttributes = {relationshipToCandidate, summary, authorProfile, userBiography}
+		this.requiredAttributes = { relationshipToCandidate, summary, authorProfile, userBiography };
 	}
 
 	/**
-	 * Sets the Attributes within the Site References Collection 
-	 * @param {SiteReference} data 
+	 * Sets the Attributes within the Site References Collection
+	 * @param {SiteReference} data
 	 */
-	setData(data){
-		this.data = {...this.data, ...data}
+	setData(data) {
+		this.data = { ...this.data, ...data };
 	}
-
 }
 
 export class EducationService extends DBService {
@@ -262,8 +258,6 @@ export class EducationService extends DBService {
 	 * @property {Biography | string} userBiography - The user biography associated with this education
 	 */
 
-	/**@type {Education | undefined} */
-	data;
 	constructor(qualification = '', institution = '', startDate = '', biographyId = '') {
 		super();
 		this.collectionId = mainDb.collections.educations;
@@ -290,7 +284,9 @@ export class EducationService extends DBService {
 
 		return storage
 			.create('certificates', file)
-			.then((res) => this.create({ certificateSID: res.file.$id, ...this.data, ...data }))
+			.then((res) => {
+				if ('file' in res) this.create({ certificateSID: res.file.$id, ...this.data, ...data });
+			})
 			.catch((err) => handleError(err));
 	}
 }
@@ -313,8 +309,7 @@ export class UserBiographyService extends DBService {
 	 * @property {UserProfile | string} [userProfile] - User profile
 	 */
 
-	/**@type {Biography | undefined} */
-	data;
+	/**@param {string} userId  */
 	constructor(userId) {
 		super();
 		this.collectionId = mainDb.collections.userBiographies;
