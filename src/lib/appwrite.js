@@ -544,7 +544,7 @@ export class DBService {
 	
 	export class StorageService {
 		/**
-		 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios'|'messageMedia')} BucketName
+		 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios'|'messageMedia'|'logos'|'profileMedia'|'posts')} BucketName
 		 */
 		client = new Client();
 		storage = new Storage(this.client);
@@ -556,7 +556,10 @@ export class DBService {
 		coverPhotos: '65d0d16c9f7aae6bf573',
 		introAudios: '65d0ceb1c7c45b65566e',
 		avatars: '65d0cbf20c9b0c907251',
-		messageMedia: "65f4def1e7eec7823f4b"
+		messageMedia: "65f4def1e7eec7823f4b",
+		logos: '65f678add6f8f1e14cc3',
+		profileMedia: '65f67c2ebd365688cbb2',
+		posts: '65f90e7cb602802afadc'
 	};
 	
 	constructor() {
