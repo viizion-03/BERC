@@ -60,3 +60,8 @@ npm install --save-dev svelte-preprocess-import-assets
 ``` bash
 npm install appwrite
 ```
+
+### Superforms
+``` bash
+npm i -D sveltekit-superforms 
+```
