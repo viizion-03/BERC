@@ -47,7 +47,7 @@ npx tailwindcss init -p
 
 ### Flowbite-Svelte
 ``` bash
-npm i -D flowbite-svelte flowbite
+npm i -D flowbite-svelte flowbite flowbite-svelte-blocks flowbite-svelte-icons flowbite-typography
 ```
 
 ### Assets Import
