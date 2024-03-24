@@ -35,8 +35,8 @@
             </div>
     
             <div class="mb-6">
-                <p class="mb-3 text-end">Don't have an account? <a href="/auth/signup" class="text-blue-400 underline">sign up</a></p>
-                <Checkbox name="rememberMe" bind:checked={$form.rememberMe}>Remember Me</Checkbox>
+                <p class="mb-3 text-center">Don't have an account? <a href="/auth/signup" class="text-blue-400 underline">sign up</a></p>
+                <!-- <Checkbox name="rememberMe" bind:checked={$form.rememberMe}>Remember Me</Checkbox> -->
             </div>
     
             <Button class="w-full" type='submit'>Sign in</Button>

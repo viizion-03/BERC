@@ -1,4 +1,13 @@
-import { Databases, Client, Storage, Account, ID, AppwriteException, Query } from 'appwrite';
+import {
+	Locale,
+	Databases,
+	Client,
+	Storage,
+	Account,
+	ID,
+	AppwriteException,
+	Query
+} from 'appwrite';
 
 /**
  * object containing the project ID and endpoint of appwrite
@@ -444,12 +453,12 @@ export class DBService {
 
 	databaseId = '';
 	collectionId = '';
-	requiredAttributes = {}
+	requiredAttributes = {};
 
 	/**
 	 * @type {object | undefined}
 	 */
-	data
+	data;
 
 	/**
 	 * object containing IDs of all collections in the main database within appwrite
@@ -465,11 +474,15 @@ export class DBService {
 	 * @returns
 	 */
 	// * @param {{omangPassport:string, firstname:string, dob:string, nationality:string, surname:string}} data Profile Object containing key value pairs
-	async create(data={}, id = '') {
+	async create(data = {}, id = '') {
 		const docId = id ? id : ID.unique();
 
 		return this.db
-			.createDocument(this.databaseId, this.collectionId, docId, {...this.requiredAttributes,...this.data, ...data })
+			.createDocument(this.databaseId, this.collectionId, docId, {
+				...this.requiredAttributes,
+				...this.data,
+				...data
+			})
 			.then((doc) => {
 				return { success: true, doc };
 			})
@@ -503,52 +516,52 @@ export class DBService {
 	 */
 	async list(queryList = []) {
 		return this.db
-		.listDocuments(this.databaseId, this.collectionId, queryList)
-		.then((docs) => {
-			return { success: true, docs };
-		})
-		.catch((err) => handleError(err));
+			.listDocuments(this.databaseId, this.collectionId, queryList)
+			.then((docs) => {
+				return { success: true, docs };
+			})
+			.catch((err) => handleError(err));
 	}
-	
+
 	/**
 	 * Updates the attributes of the document  with the provided ID
-	*
-	* @param {string} id Document primary ID
-	* @param {object} data Key value pairs of attributes that are to be updated
-	* @returns
+	 *
+	 * @param {string} id Document primary ID
+	 * @param {object} data Key value pairs of attributes that are to be updated
+	 * @returns
 	 */
-	async update(id, data={}) {
+	async update(id, data = {}) {
 		return this.db
-			.updateDocument(this.databaseId, this.collectionId, id, {...this.data, ...data})
+			.updateDocument(this.databaseId, this.collectionId, id, { ...this.data, ...data })
 			.then((doc) => {
 				return { success: true, doc };
 			})
 			.catch((err) => handleError(err));
-		}
-		
-		/**
-		 * Deletes the Document of the provided ID from the Database
-		*
-		* @param {string} id Primary ID of the Document to be deleted
-		* @returns
-		*/
-		async delete(id) {
-			return this.db
+	}
+
+	/**
+	 * Deletes the Document of the provided ID from the Database
+	 *
+	 * @param {string} id Primary ID of the Document to be deleted
+	 * @returns
+	 */
+	async delete(id) {
+		return this.db
 			.deleteDocument(this.databaseId, this.collectionId, id)
 			.then(() => {
 				return { success: true };
 			})
 			.catch((err) => handleError(err));
-		}
 	}
-	
-	export class StorageService {
-		/**
-		 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios'|'messageMedia'|'logos'|'profileMedia'|'posts')} BucketName
-		 */
-		client = new Client();
-		storage = new Storage(this.client);
-		
+}
+
+export class StorageService {
+	/**
+	 * @typedef {('avatars'|'references'|'projects'|'certificates'|'coverPhotos'|'introAudios'|'messageMedia'|'logos'|'profileMedia'|'posts')} BucketName
+	 */
+	client = new Client();
+	storage = new Storage(this.client);
+
 	buckets = {
 		projects: '65d21b3c544d84d4dac7',
 		certificates: '65d0d6b3b3797dd487ad',
@@ -556,12 +569,12 @@ export class DBService {
 		coverPhotos: '65d0d16c9f7aae6bf573',
 		introAudios: '65d0ceb1c7c45b65566e',
 		avatars: '65d0cbf20c9b0c907251',
-		messageMedia: "65f4def1e7eec7823f4b",
+		messageMedia: '65f4def1e7eec7823f4b',
 		logos: '65f678add6f8f1e14cc3',
 		profileMedia: '65f67c2ebd365688cbb2',
 		posts: '65f90e7cb602802afadc'
 	};
-	
+
 	constructor() {
 		this.client.setEndpoint(config.endPoint);
 		this.client.setProject(config.project);
@@ -583,7 +596,6 @@ export class DBService {
 			})
 			.catch((err) => handleError(err));
 	}
-
 
 	/**
 	 * Uploads a new file to the Specified Storage Bucket
@@ -700,5 +712,27 @@ export class DBService {
 		} catch (error) {
 			return handleError(error);
 		}
+	}
+}
+
+export class LocalService {
+	client = new Client();
+	locale = new LocalService();
+
+	constructor() {
+		this.client.setEndpoint(config.endPoint);
+		this.client.setProject(config.project);
+	}
+
+	/**
+	 * returns countryList
+	 * 
+	 * @returns {Promise<{success: boolean;errorMessage: any;error: any;} | { success: boolean; countryList: import('appwrite').Models.CountryList;}>}
+	 */
+	async listCountries(){
+		// @ts-ignore
+		return this.locale.listCountries().then(countryList => {
+			return {success:true, countryList}
+		}).catch(err => handleError(err))
 	}
 }
