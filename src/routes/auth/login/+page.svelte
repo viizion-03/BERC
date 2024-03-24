@@ -24,7 +24,7 @@
     
             <div class='mb-4'>
                 <Label for="password" class="mb-2">Password</Label>
-                <Input type="password" id="password" name='password' required />
+                <nput type="password" id="password" name='password' required />
             </div>
     
             <div class="mb-6">

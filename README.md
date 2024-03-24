@@ -65,3 +65,8 @@ npm install appwrite
 ``` bash
 npm i -D sveltekit-superforms 
 ```
+
+### Zod
+``` bash
+npm install zod
+```
