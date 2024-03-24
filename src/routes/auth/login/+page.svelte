@@ -1,12 +1,17 @@
 <script>
-	import { Input, Button, Label,Checkbox } from 'flowbite-svelte';
+    import {superForm} from 'sveltekit-superforms/client'
+	import { Input, Button, Label,Checkbox, Helper } from 'flowbite-svelte';
 	import Art from '$lib/assets/login_art.jpg';
     import Logo from '$lib/assets/logo_light.png'; 
+
+    export let data;
+    const {form, errors, enhance} = superForm(data.form)    
+
 </script>
 
 <div class="flex gap-4 h-svh items-center">
     <div class="flex flex-grow justify-center ">
-        <form  method="post" class="shadow-xl p-6 rounded-md border lg:w-1/4">
+        <form use:enhance  method="post" class="shadow-xl p-6 rounded-md border lg:w-1/4">
 
             <div class="flex gap-2 object-contain mb-5 justify-center">
                 <img src={Logo} alt="BERC logo" class="w-72 object-cover border-b-2 " />
@@ -19,17 +24,19 @@
     
             <div class="mb-4">
                 <Label for="email" class="mb-2">Email address </Label>
-                <Input type="email" id="email" name='email' placeholder="John@example.com" required />
+                <Input type="email" id="email" name='email' placeholder="John@example.com"  bind:value={$form.email} />
+                <Helper color="red">{$errors.email ? $errors.email : ''}</Helper>
             </div>
     
             <div class='mb-4'>
                 <Label for="password" class="mb-2">Password</Label>
-                <nput type="password" id="password" name='password' required />
+                <Input type="password" id="password" name='password' bind:value={$form.password} />
+                <Helper color='red'>{$errors.password ? $errors.password : ''}</Helper>
             </div>
     
             <div class="mb-6">
                 <p class="mb-3 text-end">Don't have an account? <a href="/auth/signup" class="text-blue-400 underline">sign up</a></p>
-                <Checkbox name="rememberMe">Remember Me</Checkbox>
+                <Checkbox name="rememberMe" bind:checked={$form.rememberMe}>Remember Me</Checkbox>
             </div>
     
             <Button class="w-full" type='submit'>Sign in</Button>
