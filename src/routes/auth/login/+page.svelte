@@ -9,9 +9,9 @@
 
 </script>
 
-<div class="flex gap-4 h-svh items-center">
+<div class="flex gap-4 h-svh items-center bg-gradient-to-bl bg-slate-500">
     <div class="flex flex-grow justify-center ">
-        <form use:enhance  method="post" class="shadow-xl p-6 rounded-md border lg:w-1/4">
+        <form use:enhance  method="post" class="bg-white shadow-xl p-6 rounded-md border lg:w-1/4">
 
             <div class="flex gap-2 object-contain mb-5 justify-center">
                 <img src={Logo} alt="BERC logo" class="w-72 object-cover border-b-2 " />
@@ -43,5 +43,5 @@
         </form> 
 
     </div>
-		<img src={Art} alt="Page Art" class="opacity-80 md:absolute md:right-0 hidden md:block ms-auto w-3/12 h-full" />
+		<!-- <img src={Art} alt="Page Art" class="opacity-80 md:absolute md:right-0 hidden md:block ms-auto w-3/12 h-full" /> -->
 </div>
