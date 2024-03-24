@@ -10,7 +10,9 @@
 
 <div class="flex flex-col gap-4 h-svh items-stretch bg-gradient-to-bl bg-slate-500">
 	<div class="flex justify-center mt-5">
-		<img src={Logo} alt="BERC logo" class="w-72 object-cover" />
+        <a href="/">
+            <img src={Logo} alt="BERC logo" class="w-72 object-cover" />
+        </a>
 	</div>
 	<div class="flex justify-center">
 		<form method="post" class="bg-white shadow-xl p-6 rounded-md border lg:w-2/6">
@@ -89,7 +91,7 @@
 			</div>
 
 			<p class="mb-3 text-center">
-				Already have an account? <a href="/auth/login" class="text-blue-400 underline">sign up</a>
+				Already have an account? <a href="/auth/login" class="text-blue-400 underline">Login</a>
 			</p>
 			<Button class="w-full" type="submit">Create Account</Button>
 		</form>

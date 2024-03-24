@@ -14,7 +14,9 @@
         <form use:enhance  method="post" class="bg-white shadow-xl p-6 rounded-md border lg:w-1/4">
 
             <div class="flex gap-2 object-contain mb-5 justify-center">
-                <img src={Logo} alt="BERC logo" class="w-72 object-cover border-b-2 " />
+                <a href="/">
+                    <img src={Logo} alt="BERC logo" class="w-72 object-cover border-b-2 " />
+                </a>
             </div>
             
             <div class="text-center mb-6">
