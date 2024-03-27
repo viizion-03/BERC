@@ -13,7 +13,7 @@ export async function load({ locals }) {
 }
 
 export const actions = {
-  default: async (event) => {
+  logout: async (event) => {
     const { account } = createSessionClient(event);
 
     await account.deleteSession("current");

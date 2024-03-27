@@ -19,6 +19,6 @@
 	</li>
 </ul>
 
-<form method="post">
+<form method="post" action='?/logout'>
 	<button type="submit">Log out</button>
 </form>

@@ -6,7 +6,6 @@ export async function handle({ event, resolve }) {
 		// @ts-ignore
 		event.locals.user = await account.get();
 	} catch (error) {
-		// console.log(error);
 	}
 
 	return resolve(event);

@@ -5,5 +5,6 @@ export async function load({ locals }) {
 	if (!locals.user) {
 		redirect(301, '/auth/login');
 	}
-	redirect(301, '/account');
+
+	return {}
 }

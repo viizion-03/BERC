@@ -6,6 +6,7 @@ import { LocalService } from '$lib/services/appwrite.js';
 import { createAdminClient, SESSION_COOKIE } from '$lib/services/appwrite-auth.js';
 import { redirect } from '@sveltejs/kit';
 import { ID, OAuthProvider } from 'node-appwrite';
+import { UserProfileService } from '$lib/services/backend-services.js';
 
 const loginSchema = z
 	.object({
@@ -38,14 +39,16 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		const { email, password, username } = form.data;
+		const { email, password, username, omangPassport, dob, firstname, surname, nationality } =
+			form.data;
 
 		const { account } = createAdminClient();
 
-		// Create the session using the client
 		await account.create(ID.unique(), email, password, username);
-		const session = await account.createEmailPasswordSession(email, password);
 
+		
+		const session = await account.createEmailPasswordSession(email, password);
+		
 		cookies.set(SESSION_COOKIE, session.secret, {
 			sameSite: 'strict',
 			expires: new Date(session.expire),
@@ -53,7 +56,9 @@ export const actions = {
 			path: '/'
 		});
 
-		// Redirect to the account page.
+		const profileService = new UserProfileService(omangPassport,firstname,surname,dob.toString(),nationality);
+		await profileService.create()
+
 		redirect(301, '/account');
 	}
 };
