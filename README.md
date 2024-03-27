@@ -70,3 +70,8 @@ npm i -D sveltekit-superforms
 ``` bash
 npm install zod
 ```
+
+### Appwrite SSR Auth
+``` bash
+npm install node-appwrite
+```

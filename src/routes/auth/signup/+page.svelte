@@ -59,16 +59,28 @@
 				</div>
 			</div>
 			<hr class="mb-4" />
-			<div class="mb-4">
-				<Label for="email" class="mb-2">Email address</Label>
-				<Input
-					type="email"
-					id="email"
-					name="email"
-					placeholder="John@example.com"
-					bind:value={$form.email}
-				/>
-				<Helper color="red">{$errors.email ? $errors.email : ''}</Helper>
+			<div class="md:grid md:grid-cols-2 md:gap-3 mb-6">
+				<div>
+					<Label for="username" class="mb-2">Username</Label>
+					<Input
+						type="text"
+						id="username"
+						name="username"
+						bind:value={$form.username}
+					/>
+					<Helper color="red">{$errors.username ? $errors.username : ''}</Helper>
+				</div>
+				<div>
+					<Label for="email" class="mb-2">Email address</Label>
+					<Input
+						type="email"
+						id="email"
+						name="email"
+						placeholder="John@example.com"
+						bind:value={$form.email}
+					/>
+					<Helper color="red">{$errors.email ? $errors.email : ''}</Helper>
+				</div>
 			</div>
 
 			<div class="md:grid md:grid-cols-2 md:gap-3 mb-6">
