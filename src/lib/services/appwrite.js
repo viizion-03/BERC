@@ -518,6 +518,22 @@ export class DBService {
 		return this.db
 			.listDocuments(this.databaseId, this.collectionId, queryList)
 			.then((docs) => {
+				docs.documents.map((vacancy) => {
+					let vacancyLogo;
+					if (vacancy.userProfile) {
+						vacancyLogo = new StorageService().getFilePreview(
+							'avatars',
+							vacancy.userProfile.avatarSID
+						);
+					} else {
+						vacancyLogo = new StorageService().getFilePreview(
+							'logos',
+							vacancy.organization.logoSID
+						);
+					}
+
+					vacancy = { ...vacancy, vacancyLogo };
+				});
 				return { success: true, docs };
 			})
 			.catch((err) => handleError(err));
@@ -726,13 +742,16 @@ export class LocalService {
 
 	/**
 	 * returns countryList
-	 * 
+	 *
 	 * @returns {Promise<{success: boolean;errorMessage: any;error: any;} | { success: boolean; countryList: import('appwrite').Models.CountryList;}>}
 	 */
-	async listCountries(){
+	async listCountries() {
 		// @ts-ignore
-		return this.locale.listCountries().then(countryList => {
-			return {success:true, countryList}
-		}).catch(err => handleError(err))
+		return this.locale
+			.listCountries()
+			.then((countryList) => {
+				return { success: true, countryList };
+			})
+			.catch((err) => handleError(err));
 	}
 }
