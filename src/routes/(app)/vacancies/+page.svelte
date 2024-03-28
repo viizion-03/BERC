@@ -1,0 +1,1 @@
+<h1 class="text-center font-bold">Job Vacancies Page</h1>
