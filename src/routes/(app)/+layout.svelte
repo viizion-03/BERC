@@ -8,16 +8,9 @@
 	export let data;
 
 	const { user } = data;
-  console.log(user)
 
 	$: activeUrl = $page.url.pathname;
 </script>
-
-<header>
-	<a href="/"> </a>
-
-	<div></div>
-</header>
 
 <Navbar>
 	<NavBrand href="/">
@@ -68,7 +61,7 @@
 	{/if}
 	<NavUl class="order-1" {activeUrl}>
 		<NavLi href="/">Home</NavLi>
-		<NavLi href="#">Job vacancies</NavLi>
+		<NavLi href="/vacancies">Job vacancies</NavLi>
 		<NavLi href="#">Candidate pool</NavLi>
 		<NavLi href="#">About</NavLi>
 	</NavUl>
