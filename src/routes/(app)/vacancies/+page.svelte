@@ -16,8 +16,8 @@
 <div class="px-44">
 	<h1 class="text-4xl font-bold mb-5 text-center">Open Job Vacancies</h1>
 	<div class="flex w-1/2 mx-auto mb-8">
-		<Search size="md" />
-		<Button>
+		<Search size="md" class='rounded-none rounded-s-md' />
+		<Button class='rounded-none rounded-e-md'>
 			<SearchOutline class="size-5" />
 		</Button>
 	</div>

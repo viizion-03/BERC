@@ -12,7 +12,7 @@
 	$: activeUrl = $page.url.pathname;
 </script>
 
-<Navbar>
+<Navbar class='white '>
 	<NavBrand href="/">
 		<img src={Logo} class="me-3 h-6 sm:h-9" alt="BERC Logo" />
 	</NavBrand>
@@ -38,11 +38,11 @@
 				<DropdownItem>Vacancy Applications</DropdownItem>
 				<DropdownItem>My Forums</DropdownItem>
 
-        <DropdownItem slot="footer">
-            <form action="/account?/logout" method="post">
-              <Button type=submit class='w-full'>Sign Out</Button>
-            </form>
-          </DropdownItem>
+				<DropdownItem slot="footer">
+					<form action="/account?/logout" method="post">
+						<Button type="submit" class="w-full">Sign Out</Button>
+					</form>
+				</DropdownItem>
 			</Dropdown>
 			<NavHamburger />
 		</div>

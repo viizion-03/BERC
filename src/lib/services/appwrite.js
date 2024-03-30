@@ -534,6 +534,7 @@ export class DBService {
 					}
 
 					vacancy = { ...vacancy, vacancyLogo };
+					
 				});
 				return { success: true, docs };
 			})
