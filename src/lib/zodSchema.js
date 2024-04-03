@@ -15,5 +15,7 @@ export const vacancySchema = z.object({
 	salary: z.number().min(0),
 	supportEmail: z.string(),
 	responsibilities: z.array(z.string()),
-	otherInfo: z.string().optional()
+	otherInfo: z.string().optional(),
+    userProfile: z.string().default(''),
+    organization: z.string().default(''),
 });

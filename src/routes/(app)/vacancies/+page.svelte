@@ -12,7 +12,8 @@
 		Toggle,
 		Textarea,
 		Listgroup,
-		Popover
+		Popover,
+		Radio
 	} from 'flowbite-svelte';
 	import {
 		SearchOutline,
@@ -35,24 +36,34 @@
 		month: 'long',
 		day: 'numeric'
 	};
-	vacancies.then((res) => console.log(res));
 
 	// Vacancy Form tings
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms';
 	import { districts } from '$lib/constants.js';
 	const { form, errors, enhance, constraints } = superForm(data.newVacancyForm);
+	let { organizations } = data.user;
 
 	$: district = districts.filter((d) => d.value === $form.district)[0];
 	let qualification = '';
 	let responsibility = '';
+
+	if (!organizations) $form.profileType = 'user';
+	if(organizations && organizations.length > 0)
+	organizations = organizations.map((o) => {
+		return { value: o.$id, name: o.name };
+	});
 </script>
 
-<SuperDebug data={$form} />
 
 <Modal bind:open={formModal} size="xl" autoclose={false} class="w-full">
 	<form class="flex flex-col space-y-3" method="post" action="vacancies?/create" use:enhance>
 		<h1>Create a job Vacacancy</h1>
+		{#if $errors._errors}
+			<Alert color="red" class="mb-5">
+				{$errors._errors[0]}
+			</Alert>
+		{/if}
 
 		<div class="grid grid-cols-2 gap-4">
 			<div class="space-y-4">
@@ -74,7 +85,9 @@
 					<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
 				</div>
 				<Label class="flex items-center gap-1">Location<InfoCircleSolid id="locationInfo" /></Label>
-				<Popover triggeredBy='#locationInfo' placement='right-end' class='w-64'>Select a district in order to select one of it's city, town or village</Popover>
+				<Popover triggeredBy="#locationInfo" placement="right-end" class="w-64"
+					>Select a district in order to select one of it's city, town or village</Popover
+				>
 				<div class="grid grid-cols-2 gap-2">
 					<div>
 						<Select
@@ -267,14 +280,36 @@
 
 		<Hr></Hr>
 
-		{#each $form.requirements as req}
-			<input type="hidden" name="requirements" value={req} />
-		{/each}
+		<div>
+			<div>
+				<Label>Post vacancy as:</Label>
+				<Radio name="profileType" bind:group={$form.profileType} required value="user"
+					>Individual</Radio
+				>
 
-		{#each $form.responsibilities as res}
-			<input type="hidden" name="responsibilities" value={res} />
-		{/each}
-		<Button type="submit" class="max-w-72 mx-auto">Post vacancy</Button>
+				{#if organizations}
+					<Radio name="profileType" bind:group={$form.profileType} required value="organization"
+						>Organization
+					</Radio>
+					{#if $form.profileType === 'organization'}
+						<Select items={organizations} bind:value={$form.organization} name="organization" />
+					{:else}
+						<input type="hidden" name="userProfile" bind:value={data.user.$id} />
+					{/if}
+				{/if}
+			</div>
+
+			<!--HIDDEN FIELDS  -->
+			{#each $form.requirements as req}
+				<input type="hidden" name="requirements" value={req} />
+			{/each}
+
+			{#each $form.responsibilities as res}
+				<input type="hidden" name="responsibilities" value={res} />
+			{/each}
+
+			<Button type="submit" class="max-w-72 mx-auto">Post vacancy</Button>
+		</div>
 	</form>
 </Modal>
 

@@ -1,5 +1,5 @@
 <script>
-	import { Search, Skeleton, Button, Spinner, Alert, Heading, P } from 'flowbite-svelte';
+	import { Search, Skeleton, Button, Spinner, Alert, Heading, P,Toast } from 'flowbite-svelte';
 	import { SearchOutline, MapPinSolid, MapPinAltSolid } from 'flowbite-svelte-icons';
 	import { StorageService } from '$lib/services/appwrite.js';
 	import { page } from '$app/stores';
@@ -26,9 +26,12 @@
 
 		return differenceInDays;
 	}
+
+console.log(vacancy)
 </script>
 
 <div class="flex">
+	
 	<!-- Other Vacancies -->
 	<div class="max-w-72">
 		<div class="flex">
@@ -118,7 +121,7 @@
 				<div class="grid gap-2">
 					<h3 class="text-xl font-bold">Description</h3>
 					<p class="text-gray-500 dark:text-gray-400">
-						{v.description}
+						{v.jobDescription}
 					</p>
 				</div>
 				<div class="grid gap-2">
