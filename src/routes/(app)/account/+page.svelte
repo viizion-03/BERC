@@ -22,3 +22,7 @@
 <form method="post" action='?/logout'>
 	<button type="submit">Log out</button>
 </form>
+
+<form action="?/test" method="post">
+<button type="submit">PUSH ME TO TEST FLASH</button>
+</form>

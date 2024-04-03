@@ -81,3 +81,7 @@ npm install node-appwrite
 npm i -D sveltekit-flash-message
 ```
 
+### Svelte French Toast
+``` bash
+npm install svelte-french-toast
+```

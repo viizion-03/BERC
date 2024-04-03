@@ -31,10 +31,10 @@
 					>
 					<span class="block truncate text-sm font-medium">{user.email}</span>
 				</div>
-				<DropdownItem>Dashboard</DropdownItem>
+				<DropdownItem href='/account'>Dashboard</DropdownItem>
 				<DropdownItem>Chats</DropdownItem>
 				<DropdownItem>My Organizations</DropdownItem>
-				<DropdownItem>My Vacancies</DropdownItem>
+				<DropdownItem href='/account/vacancies'>My Vacancies</DropdownItem>
 				<DropdownItem>Vacancy Applications</DropdownItem>
 				<DropdownItem>My Forums</DropdownItem>
 
