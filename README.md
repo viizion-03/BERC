@@ -75,3 +75,9 @@ npm install zod
 ``` bash
 npm install node-appwrite
 ```
+
+### SvelteKit Flash Message
+``` bash 
+npm install sveltekit-flash-message
+```
+
