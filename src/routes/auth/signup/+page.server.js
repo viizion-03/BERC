@@ -4,9 +4,9 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 import { LocalService } from '$lib/services/appwrite.js';
 import { createAdminClient, SESSION_COOKIE } from '$lib/services/appwrite-auth.js';
-import { redirect } from '@sveltejs/kit';
 import { ID, OAuthProvider } from 'node-appwrite';
 import { UserProfileService } from '$lib/services/backend-services.js';
+import { redirect } from 'sveltekit-flash-message/server';
 
 const loginSchema = z
 	.object({
@@ -59,6 +59,6 @@ export const actions = {
 		const profileService = new UserProfileService(omangPassport,firstname,surname,dob.toString(),nationality);
 		await profileService.create()
 
-		redirect(301, '/account');
+		redirect('/account', {type:'success', message: 'Login Successful'}, cookies);
 	}
 };

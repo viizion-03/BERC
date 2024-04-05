@@ -1,16 +1,18 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
-	import { Input, Button, Label, Checkbox, Helper, Alert } from 'flowbite-svelte';
+	import { Input, Button, Label, Checkbox, Helper, Alert,Spinner } from 'flowbite-svelte';
 	import Art from '$lib/assets/login_art.jpg';
 	import Logo from '$lib/assets/logo_light.png';
 
 	export let data;
 	const { form, errors, enhance } = superForm(data.form);
+
+	let awaitingLogin = false;
 </script>
 
 <div class="flex gap-4 h-svh items-center bg-gradient-to-bl bg-slate-500">
 	<div class="flex flex-grow justify-center">
-		<form use:enhance method="post" class="bg-white shadow-xl p-6 rounded-md border lg:w-1/4">
+		<form use:enhance method="post" class="bg-white shadow-xl p-6 rounded-md border lg:w-1/4" on:submit={() => awaitingLogin=true}>
 			<div class="flex gap-2 object-contain mb-5 justify-center">
 				<a href="/">
 					<img src={Logo} alt="BERC logo" class="w-72 object-cover border-b-2" />
@@ -53,7 +55,14 @@
 				<!-- <Checkbox name="rememberMe" bind:checked={$form.rememberMe}>Remember Me</Checkbox> -->
 			</div>
 
+			{#if awaitingLogin}
+			<Button disabled class='w-full'>
+				<Spinner size={4} />
+			</Button>
+			{:else}
 			<Button class="w-full" type="submit">Sign in</Button>
+			{/if}
+
 		</form>
 	</div>
 	<!-- <img src={Art} alt="Page Art" class="opacity-80 md:absolute md:right-0 hidden md:block ms-auto w-3/12 h-full" /> -->

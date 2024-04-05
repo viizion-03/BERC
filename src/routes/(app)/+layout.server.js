@@ -3,24 +3,16 @@ import { redirect } from '@sveltejs/kit';
 import { loadFlash } from 'sveltekit-flash-message/server';
 // @ts-ignore
 import { Query } from 'appwrite';
+import { createSessionClient } from '$lib/services/appwrite-auth.js';
 
 // @ts-ignore
-export const load = async ({ locals, url }) => {
+export const load = async ({ locals }) => {
+	//get user profile data
+
+	const getProfile = async () =>
+		// @ts-ignore
+		new UserProfileService().get(locals.user.$id, [Query.select(['firstname', 'surname'])]);
 
 	// @ts-ignore
-	if (!locals.user) {
-		redirect(301, '/auth/login');
-	} else {
-		if (url.pathname.startsWith('/auth')) {
-			redirect(301, '/');
-		}
-	}
-
-	// @ts-ignore
-	const profileData = await new UserProfileService().get(locals.user.$id).then((res) => {
-		if ('doc' in res) return res.doc;
-	});
-
-	// @ts-ignore
-	return { user: { ...locals.user, ...profileData } };
+	return { user: locals.user, userProfile: getProfile() };
 };

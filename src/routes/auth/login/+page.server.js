@@ -3,9 +3,9 @@ import { superValidate, message, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 import { createAdminClient, SESSION_COOKIE } from '$lib/services/appwrite-auth.js';
-import { redirect } from '@sveltejs/kit';
 import { ID, OAuthProvider } from 'node-appwrite';
 import { AppwriteException } from 'appwrite';
+import { redirect } from 'sveltekit-flash-message/server';
 
 const loginSchema = z.object({
 	email: z.string().email().min(1).trim(),
@@ -50,6 +50,6 @@ export const actions = {
 			console.log(form)
 			return fail(400,{form})
 		}
-		redirect(301, '/account');
+		redirect('/account', {type:'success', message: 'Login Successful'}, cookies);
 	}
 };

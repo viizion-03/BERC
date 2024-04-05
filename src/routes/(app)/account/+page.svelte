@@ -1,9 +1,10 @@
 <script>
+	import MyToast from '$lib/components/MyToast.svelte'
 	export let data;
 
 	const { user } = data;
 </script>
-
+<MyToast />
 <ul>
 	<li>
 		<strong>Email:</strong>

@@ -51,7 +51,11 @@
 	let selectCategory = 'Job Vacancies';
 
 	const vacancyClasses = 'shrink-0 shadow-lg';
+
+	import MyToast from "$lib/components/MyToast.svelte"
 </script>
+
+<MyToast />
 
 <div class="bg-slate-500">
 	<div class="flex justify-center h-[460px]">
@@ -406,17 +410,16 @@
 	</div>
 </section>
 
-<div class='flex justify-center mb-12'>
-
+<div class="flex justify-center mb-12">
 	<div class="bg-blue-400 p-6 max-w-80 rounded-md flex flex-col gap-4 text-center">
-		<p class='text-lg font-semibold'>Join the Berc Community & Boost your career</p>
+		<p class="text-lg font-semibold">Join the Berc Community & Boost your career</p>
 		<Button>Create Your Account</Button>
 	</div>
 </div>
 
-<section class='grid grid-cols-2 px-44'>
+<section class="grid grid-cols-2 px-44">
 	<div>
-		<img src={Logo} alt="" size=''>
+		<img src={Logo} alt="" size="" />
 		<h3>Contact Us</h3>
 		<p>Email: info@berc.cloud</p>
 		<p>tel: 367 9891/ 71769269</p>

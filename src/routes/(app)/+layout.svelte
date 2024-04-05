@@ -5,14 +5,17 @@
 	import Logo from '$lib/assets/logo_light.png';
 	import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from 'flowbite-svelte';
 	import { ChevronDownOutline } from 'flowbite-svelte-icons';
+	import toast, { Toaster } from 'svelte-french-toast';
 	export let data;
 
-	const { user } = data;
+	const { user, userProfile } = data;
+
+	userProfile.then((res) => console.log(res));
 
 	$: activeUrl = $page.url.pathname;
 </script>
 
-<Navbar class='white '>
+<Navbar class="white ">
 	<NavBrand href="/">
 		<img src={Logo} class="me-3 h-6 sm:h-9" alt="BERC Logo" />
 	</NavBrand>
@@ -20,21 +23,25 @@
 	{#if data.user}
 		<div class="flex md:order-2 gap-1">
 			<Button color="none">
-				{data.user.username ? data.user.username : data.user.email}
+				{data.user.name ? data.user.name : data.user.email}
 
 				<ChevronDownOutline class="size-5 ms-2 text-orange-600 dark:text-white" /></Button
 			>
 			<Dropdown>
 				<div slot="header" class="px-4 py-2">
-					<span class="block text-sm text-gray-900 dark:text-white"
-						>{user.firstname} {user.surname}</span
-					>
-					<span class="block truncate text-sm font-medium">{user.email}</span>
+					{#await userProfile then p}
+						{#if 'doc' in p}
+							<span class="block text-sm text-gray-900 dark:text-white"
+								>{p?.doc.firstname} {p?.doc.surname}</span
+							>
+							<span class="block truncate text-sm font-medium">{data.user.email}</span>
+						{/if}
+					{/await}
 				</div>
-				<DropdownItem href='/account'>Dashboard</DropdownItem>
+				<DropdownItem href="/account">Dashboard</DropdownItem>
 				<DropdownItem>Chats</DropdownItem>
 				<DropdownItem>My Organizations</DropdownItem>
-				<DropdownItem href='/account/vacancies'>My Vacancies</DropdownItem>
+				<DropdownItem href="/account/vacancies">My Vacancies</DropdownItem>
 				<DropdownItem>Vacancy Applications</DropdownItem>
 				<DropdownItem>My Forums</DropdownItem>
 
@@ -63,7 +70,7 @@
 		<NavLi href="/">Home</NavLi>
 		<NavLi href="/vacancies">Job vacancies</NavLi>
 		<NavLi href="#">Candidate pool</NavLi>
-		<NavLi href="#">About</NavLi>
+		<NavLi href="/about">About</NavLi>
 	</NavUl>
 </Navbar>
 

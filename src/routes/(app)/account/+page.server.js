@@ -1,17 +1,6 @@
+
 import { SESSION_COOKIE, createSessionClient } from '$lib/services/appwrite-auth.js';
 import { redirect } from 'sveltekit-flash-message/server';
-
-export async function load({ locals }) {
-	// @ts-ignore
-	if (!locals.user) {
-		redirect(301, '/auth/login');
-	}
-
-	return {
-		// @ts-ignore
-		user: locals.user
-	};
-}
 
 export const actions = {
 	logout: async (event) => {
