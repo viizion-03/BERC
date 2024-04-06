@@ -56,7 +56,7 @@ export const actions = {
 			path: '/'
 		});
 
-		const profileService = new UserProfileService(omangPassport,firstname,surname,dob.toString(),nationality);
+		const profileService = new UserProfileService({cookies},omangPassport,firstname,surname,dob.toString(),nationality);
 		await profileService.create()
 
 		redirect('/account', {type:'success', message: 'Login Successful'}, cookies);

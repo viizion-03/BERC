@@ -4,6 +4,8 @@
 	import { StorageService } from '$lib/services/appwrite.js';
 	import { page } from '$app/stores';
 	import { onMount, beforeUpdate, afterUpdate, onDestroy } from 'svelte';
+	import {districts} from '$lib/constants.js'
+	import MyToast from '$lib/components/MyToast.svelte';
 	export let data;
 	const { vacancies } = data;
 
@@ -29,6 +31,8 @@
 
 console.log(vacancy)
 </script>
+
+<MyToast/>
 
 <div class="flex">
 	
@@ -56,7 +60,7 @@ console.log(vacancy)
 								>
 									<p class="text-lg font-semibold">{v.jobTitle}</p>
 									<p class="">P {v.salary}</p>
-									<p class="">{v.location}, {v.district}</p>
+									<p class="">{v.location}, {districts.filter(d => d.value === v.district)[0].name}</p>
 								</div>
 							</a>
 						{/each}
@@ -93,7 +97,7 @@ console.log(vacancy)
 				<div class="grid grid-cols-2 items-center gap-4">
 					<div class="flex items-center gap-2">
 						<MapPinAltSolid />
-						<span class="text-sm text-gray-500 dark:text-gray-400">{v.location}, {v.district}</span>
+						<span class="text-sm text-gray-500 dark:text-gray-400">{v.location}, {districts.filter(d => d.value === v.district)[0].name}</span>
 					</div>
 					<div class="flex items-center gap-2">
 						<svg

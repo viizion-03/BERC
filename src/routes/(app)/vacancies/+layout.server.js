@@ -7,13 +7,13 @@ import { vacancySchema } from "$lib/zodSchema";
 
 
 // @ts-ignore
-export const load = async () => {
+export const load = async (event) => {
 
     const newVacancyForm = await superValidate(zod(vacancySchema))
 
 
     function getVacancies(){
-        return new VacancyService().list()
+        return new VacancyService(event).list()
     }
 
     return {

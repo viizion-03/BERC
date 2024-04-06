@@ -26,7 +26,7 @@
 	} from 'flowbite-svelte-icons';
 	import { Modal, Label, Input, Checkbox } from 'flowbite-svelte';
 
-	let formModal = true;
+	let formModal = false;
 
 	export let data;
 	const { vacancies, user } = data;

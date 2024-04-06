@@ -44,6 +44,9 @@ export function createSessionClient(event) {
     return {
         get account() {
             return new Account(client);
+        },
+        get db(){
+            return new Databases(client);
         }
     };
 }

@@ -5,14 +5,14 @@ import { loadFlash } from 'sveltekit-flash-message/server';
 import { Query } from 'appwrite';
 
 // @ts-ignore
-export const load = async ({ locals }) => {
+export const load = async ({ locals,cookies }) => {
 	async function getVacancies() {
-		return new VacancyService().list();
+		return new VacancyService({cookies}).list();
 	}
 
 	const getProfile = async () =>
 		// @ts-ignore
-		new UserProfileService().get(locals.user.$id, [Query.select(['firstname', 'surname'])]);
+		new UserProfileService({cookies}).get(locals.user.$id, [Query.select(['firstname', 'surname'])]);
 
 	return {
 		// @ts-ignore
