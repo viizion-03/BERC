@@ -7,7 +7,7 @@ import {
 	UserProfileService,
 	VacancyService
 } from '$lib/services/backend-services.js';
-import { redirect } from 'sveltekit-flash-message/server';
+import { redirect, } from 'sveltekit-flash-message/server';
 
 export const load = async ({ locals }) => {
 	const getOrganizations = async () =>

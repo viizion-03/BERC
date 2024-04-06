@@ -10,8 +10,6 @@
 
 	const { user, userProfile } = data;
 
-	userProfile.then((res) => console.log(res));
-
 	$: activeUrl = $page.url.pathname;
 </script>
 
