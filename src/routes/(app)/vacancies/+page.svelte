@@ -42,19 +42,25 @@
 	import SuperDebug from 'sveltekit-superforms';
 	import { districts } from '$lib/constants.js';
 	const { form, errors, enhance, constraints } = superForm(data.newVacancyForm);
-	let { organizations } = data.user;
+	let { organizations } = data;
 
 	$: district = districts.filter((d) => d.value === $form.district)[0];
 	let qualification = '';
 	let responsibility = '';
 
-	if (!organizations) $form.profileType = 'user';
-	if(organizations && organizations.length > 0)
-	organizations = organizations.map((o) => {
-		return { value: o.$id, name: o.name };
+	let orgList;
+	organizations.then((list) => {
+		if (!list) $form.profileType = 'user';
+		if (list && list.length > 0) {
+			orgList = list.map((o) => {
+				return { value: o.$id, name: o.name };
+			});
+		}
 	});
+	// userOrgs.then((res) => console.log(res));
 </script>
 
+<SuperDebug data={$form} />
 
 <Modal bind:open={formModal} size="xl" autoclose={false} class="w-full">
 	<form class="flex flex-col space-y-3" method="post" action="vacancies?/create" use:enhance>
@@ -80,7 +86,7 @@
 						id="jobDescription"
 						name="jobDescription"
 						bind:value={$form.jobDescription}
-						class="h-40"
+						class="h-32"
 					/>
 					<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
 				</div>
@@ -287,16 +293,18 @@
 					>Individual</Radio
 				>
 
-				{#if organizations}
-					<Radio name="profileType" bind:group={$form.profileType} required value="organization"
-						>Organization
-					</Radio>
-					{#if $form.profileType === 'organization'}
-						<Select items={organizations} bind:value={$form.organization} name="organization" />
-					{:else}
-						<input type="hidden" name="userProfile" bind:value={data.user.$id} />
+				{#await organizations then orgs}
+					{#if orgs}
+						<Radio name="profileType" bind:group={$form.profileType} required value="organization"
+							>Organization
+						</Radio>
+						{#if $form.profileType === 'organization'}
+							<Select items={orgList} bind:value={$form.organization} name="organization" />
+						{:else}
+							<input type="hidden" name="userProfile" bind:value={data.user.$id} />
+						{/if}
 					{/if}
-				{/if}
+				{/await}
 			</div>
 
 			<!--HIDDEN FIELDS  -->
