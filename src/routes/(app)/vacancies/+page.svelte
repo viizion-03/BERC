@@ -50,12 +50,19 @@
 			});
 		}
 	});
+
+	let isPosting = false;
 	// userOrgs.then((res) => console.log(res));
 </script>
 
-
 <Modal bind:open={formModal} size="xl" autoclose={false} class="w-full">
-	<form class="flex flex-col space-y-3" method="post" action="vacancies?/create" use:enhance>
+	<form
+		class="flex flex-col space-y-3"
+		method="post"
+		action="vacancies?/create"
+		use:enhance
+		on:submit={() => (isPosting = true)}
+	>
 		<h1>Create a job Vacacancy</h1>
 		{#if $errors._errors}
 			<Alert color="red" class="mb-5">
@@ -177,8 +184,8 @@
 							<PlusOutline />
 							Add</Button
 						>
-						<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
 					</div>
+					<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
 				</div>
 
 				<div>
@@ -208,8 +215,8 @@
 							<PlusOutline />
 							Add</Button
 						>
-						<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
 					</div>
+					<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
 				</div>
 
 				<div class="flex gap-2 max-h-40 overflow-y-hidden">
@@ -278,27 +285,32 @@
 
 		<Hr></Hr>
 
-		<div>
-			<div>
-				<Label>Post vacancy as:</Label>
-				<Radio name="profileType" bind:group={$form.profileType} required value="user"
-					>Individual</Radio
-				>
+		<div class="bg-white flex items-center gap-3">
+			<Label>Post vacancy as</Label>
+			<Radio name="profileType" bind:group={$form.profileType} required value="user"
+				>Individual</Radio
+			>
 
-				{#await organizations then orgs}
-					{#if orgs}
-						<Radio name="profileType" bind:group={$form.profileType} required value="organization"
-							>Organization
-						</Radio>
-						{#if $form.profileType === 'organization'}
-							<Select items={orgList} bind:value={$form.organization} name="organization" />
-						{:else}
-							<input type="hidden" name="userProfile" bind:value={data.user.$id} />
-						{/if}
+			{#await organizations then orgs}
+				{#if orgs}
+					<Radio name="profileType" bind:group={$form.profileType} required value="organization"
+						>Organization
+					</Radio>
+					{#if $form.profileType === 'organization'}
+						<Select
+							class="max-w-40"
+							size="sm"
+							items={orgList}
+							bind:value={$form.organization}
+							name="organization"
+						/>
+					{:else}
+						<input type="hidden" name="userProfile" bind:value={data.user.$id} />
 					{/if}
-				{/await}
-			</div>
-
+				{/if}
+			{/await}
+		</div>
+		<div class="flex justify-between items-center">
 			<!--HIDDEN FIELDS  -->
 			{#each $form.requirements as req}
 				<input type="hidden" name="requirements" value={req} />
@@ -308,27 +320,18 @@
 				<input type="hidden" name="responsibilities" value={res} />
 			{/each}
 
-			<Button type="submit" class="max-w-72 mx-auto">Post vacancy</Button>
+			{#if isPosting}
+				<Button type="submit" disabled class="disabled max-w-72 mx-auto"
+					>Posting <Spinner size={3} class="ms-3" /></Button
+				>
+			{:else}
+				<Button type="submit" class="max-w-72 mx-auto">Post vacancy</Button>
+			{/if}
 		</div>
 	</form>
 </Modal>
 
 <div class="px-44 mt-4">
-	<h1 class="text-4xl font-bold mb-5 text-center ">Open Job Vacancies</h1>
-	<div class="flex w-1/2 mx-auto mb-2">
-		<Search size="md" class="rounded-none rounded-s-md" />
-		<Button class="rounded-none rounded-e-md">
-			<SearchOutline class="size-5" />
-		</Button>
-	</div>
-
-	{#if user}
-		<Hr hrClass="w-64">or</Hr>
-		<div class="flex mb-3 mt-4 justify-center items-center">
-			<Button color="alternative" on:click={() => (formModal = true)}>Create a Job Vacancy</Button>
-		</div>
-	{/if}
-
 	{#await vacancies}
 		<div class="flex justify-center">
 			<code class="mx-auto mb-3">
@@ -357,6 +360,21 @@
 			</Card>
 		</div>
 	{:then res}
+		<h1 class="text-4xl font-bold mb-5 text-center">Open Job Vacancies</h1>
+		<div class="flex w-1/2 mx-auto mb-2">
+			<Search size="md" class="rounded-none rounded-s-md" />
+			<Button class="rounded-none rounded-e-md">
+				<SearchOutline class="size-5" />
+			</Button>
+		</div>
+
+		{#if user}
+			<Hr hrClass="w-64">or</Hr>
+			<div class="flex mb-3 mt-4 justify-center items-center">
+				<Button color="alternative" on:click={() => (formModal = true)}>Create a Job Vacancy</Button
+				>
+			</div>
+		{/if}
 		{#if 'docs' in res}
 			<div class=" grid grid-cols-3 gap-5">
 				{#each res.docs.documents as v}

@@ -14,7 +14,7 @@
 	$: activeUrl = $page.url.pathname;
 </script>
 
-<div class="bg-orange-100 h-svh overflow-hidden flex flex-col">
+<div class="bg-orange-50 h-svh overflow-hidden flex flex-col">
 	<Navbar class="white ">
 		<NavBrand href="/">
 			<img src={Logo} class="me-3 h-6 sm:h-9" alt="BERC Logo" />
