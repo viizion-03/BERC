@@ -1,0 +1,1 @@
+<h1>MY FORUMS PAGE</h1>

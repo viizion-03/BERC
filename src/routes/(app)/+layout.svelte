@@ -12,6 +12,7 @@
 	const { user, userProfile } = data;
 
 	$: activeUrl = $page.url.pathname;
+
 </script>
 
 <div class="bg-orange-50 h-svh overflow-hidden flex flex-col">
