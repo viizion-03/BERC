@@ -6,6 +6,7 @@
 	import { Dropdown, DropdownItem, DropdownDivider, DropdownHeader } from 'flowbite-svelte';
 	import { ChevronDownOutline } from 'flowbite-svelte-icons';
 	import toast, { Toaster } from 'svelte-french-toast';
+	import { preprocess } from 'svelte/compiler';
 	export let data;
 
 	const { user, userProfile } = data;
@@ -13,7 +14,7 @@
 	$: activeUrl = $page.url.pathname;
 </script>
 
-<div class="bg-orange-100 h-svh overflow-y-auto flex flex-col">
+<div class="bg-orange-100 h-svh overflow-hidden flex flex-col">
 	<Navbar class="white ">
 		<NavBrand href="/">
 			<img src={Logo} class="me-3 h-6 sm:h-9" alt="BERC Logo" />
@@ -73,7 +74,8 @@
 		</NavUl>
 	</Navbar>
 
-	<div class="flex-grow">
+	<div class="flex-grow overflow-y-auto">
 		<slot />
 	</div>
 </div>
+

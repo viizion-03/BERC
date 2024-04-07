@@ -30,16 +30,9 @@
 
 	export let data;
 	const { vacancies, user } = data;
-	const dateOptions = {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	};
 
 	// Vacancy Form tings
 	import { superForm } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms';
 	import { districts } from '$lib/constants.js';
 	const { form, errors, enhance, constraints } = superForm(data.newVacancyForm);
 	let { organizations } = data;
@@ -60,7 +53,6 @@
 	// userOrgs.then((res) => console.log(res));
 </script>
 
-<SuperDebug data={$form} />
 
 <Modal bind:open={formModal} size="xl" autoclose={false} class="w-full">
 	<form class="flex flex-col space-y-3" method="post" action="vacancies?/create" use:enhance>
@@ -321,8 +313,8 @@
 	</form>
 </Modal>
 
-<div class="px-44">
-	<h1 class="text-4xl font-bold mb-5 text-center">Open Job Vacancies</h1>
+<div class="px-44 mt-4">
+	<h1 class="text-4xl font-bold mb-5 text-center ">Open Job Vacancies</h1>
 	<div class="flex w-1/2 mx-auto mb-2">
 		<Search size="md" class="rounded-none rounded-s-md" />
 		<Button class="rounded-none rounded-e-md">
