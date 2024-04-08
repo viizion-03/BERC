@@ -10,8 +10,5 @@ export const actions = {
 		event.cookies.delete(SESSION_COOKIE, { path: '/' });
 
 		redirect(301, '/auth/login');
-	},
-	test: (event) => {
-		redirect('/test/hi', { type: 'success', message: 'What ever you did was succfull' }, event);
 	}
 };

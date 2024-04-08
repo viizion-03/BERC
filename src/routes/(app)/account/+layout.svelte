@@ -28,11 +28,11 @@
 	let activeClass =
 		'flex items-center p-2 text-base font-normal text-primary-900 bg-primary-200 dark:bg-primary-700 rounded-lg dark:text-white hover:bg-primary-100 dark:hover:bg-gray-700';
 	let nonActiveClass =
-		'flex items-center p-2 text-base font-normal text-green-900 rounded-lg dark:text-white hover:bg-primary-100 dark:hover:bg-green-700';
+		'flex items-center p-2 text-base font-normal text-green-900 rounded-lg dark:text-white hover:bg-black hover:bg-opacity-80 hover:text-white dark:hover:bg-green-700';
 </script>
 
 <div class="flex h-full">
-	<Sidebar class="h-full" {activeUrl} {activeClass} {nonActiveClass}>
+	<Sidebar class="h-full bg-slate-50" {activeUrl} {activeClass} {nonActiveClass}>
 		<SidebarWrapper>
 			<SidebarGroup>
 				<SidebarItem label="Dashboard" href="/account">
@@ -100,7 +100,7 @@
 						</span>
 					</svelte:fragment>
 				</SidebarItem>
-				<SidebarItem label="Account Settings">
+				<SidebarItem label="Account Settings" href='/account/settings'>
 					<svelte:fragment slot="icon">
 						<UserSettingsSolid
 							class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
