@@ -2,7 +2,7 @@ import { UserProfileService, VacancyService } from '$lib/services/backend-servic
 import { redirect } from '@sveltejs/kit';
 import { loadFlash } from 'sveltekit-flash-message/server';
 // @ts-ignore
-import { Query } from 'appwrite';
+import { Query } from 'node-appwrite';
 
 // @ts-ignore
 export const load = async ({ locals,cookies }) => {
@@ -12,7 +12,7 @@ export const load = async ({ locals,cookies }) => {
 
 	const getProfile = async () =>
 		// @ts-ignore
-		new UserProfileService({cookies}).get(locals.user.$id, [Query.select(['firstname', 'surname'])]);
+		new UserProfileService({cookies}).get(locals.user.$id,[Query.select(['firstname', 'surname'])]);
 
 	return {
 		// @ts-ignore

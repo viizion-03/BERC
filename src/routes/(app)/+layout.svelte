@@ -13,6 +13,7 @@
 
 	$: activeUrl = $page.url.pathname;
 
+	$: console.log($page.url.pathname);
 </script>
 
 <div class="bg-orange-50 h-svh overflow-hidden flex flex-col">
@@ -79,4 +80,3 @@
 		<slot />
 	</div>
 </div>
-
