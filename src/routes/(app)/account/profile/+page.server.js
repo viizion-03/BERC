@@ -6,7 +6,8 @@ import { fail } from '@sveltejs/kit';
 import { profileSchema, educationSchema } from '$lib/zodSchema.js';
 import { redirect } from 'sveltekit-flash-message/server';
 import { Query } from 'node-appwrite';
-import { StorageService } from '$lib/services/appwrite.js';
+import { NodeStorageService } from '$lib/services/NodeStorageService';
+
 
 export const load = async (event) => {
 	// @ts-ignore
@@ -68,7 +69,7 @@ export const actions = {
 	deleteEducation: async (event) => {
 		const form = await superValidate(event.request, zod(z.object({ educationId: z.string() ,certificateSID: z.string().optional() })));
 		return new EducationService(event).delete(form.data.educationId).then((res) => {
-			if(form.data.certificateSID) new StorageService().delete('certificates', form.data.certificateSID);
+			if(form.data.certificateSID) new NodeStorageService(event).delete('certificates', form.data.certificateSID);
 
 			if (res.success)
 				return message(form, { type: 'success', text: 'Education Deleted Successfully' });

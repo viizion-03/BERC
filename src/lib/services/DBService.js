@@ -1,14 +1,11 @@
-import { Databases, Client, ID } from 'node-appwrite';
-import { config, mainDb, handleError, StorageService } from './appwrite';
-import { createSessionClient } from './appwrite-auth';
+import { ID } from 'node-appwrite';
+import { mainDb, handleError } from './appwrite';
+import { createNodeClient } from './appwrite-auth';
 
 export class DBService {
-	// client = new Client();
-	// db = new Databases(this.client);
-
 	db;
 
-	databaseId = '';
+	databaseId = mainDb.databaseID;
 	collectionId = '';
 	requiredAttributes = {};
 
@@ -21,15 +18,11 @@ export class DBService {
 	 * object containing IDs of all collections in the main database within appwrite
 	 */
 	constructor(event) {
-		// this.client.setEndpoint(config.endPoint);
-		// this.client.setProject(config.project);
-		this.databaseId = mainDb.databaseID;
-
-		const { db } = createSessionClient(event);
+		const { db } = createNodeClient(event);
 		this.db = db;
 	}
 	/**
-	 *	@param {object} data Key value pairs based on collection attributes
+	 * @param {object} data Key value pairs based on collection attributes
 	 * @param {string} id Document primary ID, if not entred ID.unique() is used to generate a new primary key
 	 * @returns
 	 */

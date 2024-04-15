@@ -1,4 +1,4 @@
-import { createSessionClient } from '$lib/services/appwrite-auth';
+import { createNodeClient } from '$lib/services/appwrite-auth';
 import { SESSION_COOKIE } from '$lib/services/appwrite-auth';
 import { redirect } from '@sveltejs/kit';
 
@@ -15,7 +15,7 @@ export async function handle({ event, resolve }) {
 	else if(event.url.pathname.startsWith('auth')) redirect(301, '/')
 
 	//load up user data into locals
-	const {account} = createSessionClient(event);
+	const {account} = createNodeClient(event);
 	// @ts-ignore
 	event.locals.user = await account.get().then(res => res)
 

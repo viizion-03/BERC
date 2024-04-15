@@ -1,3 +1,4 @@
-<h1>
-    Random data about BERC
-</h1>
+<script>
+</script>
+
+<h1>Random data about BERC</h1>
