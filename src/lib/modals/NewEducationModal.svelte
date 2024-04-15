@@ -60,7 +60,6 @@
 	let edCertificateUploading = false;
 	export let edList;
 	$edForm.userBiography = data.user.$id;
-
 </script>
 
 <Modal bind:open={educationModal} id="add-education-modal">
@@ -69,6 +68,7 @@
 		method="post"
 		action="/account/profile?/addEducation"
 		use:edEnhance
+		class="flex flex-col gap-4"
 	>
 		<div>
 			<FloatingLabelInput
@@ -112,8 +112,8 @@
 						if ($edForm.endDate) $edForm.isSuccessfullyCompleted = true;
 					}}
 				/>
+				<Helper color="red">{$edErrors.endDate ? $edErrors.endDate : ''}</Helper>
 			</div>
-			<button type="button" on:click={() => console.log(educationFiles)}>Show uploader</button>
 		</div>
 
 		<Checkbox name="isSuccessfullyCompleted" bind:checked={$edForm.isSuccessfullyCompleted}>
@@ -127,14 +127,14 @@
 					bind:value={$edForm.certificateSID}
 					bind:files={educationFiles}
 					on:change={(e) => {
-						edCertificateUploading = true
+						edCertificateUploading = true;
 						const store = new StorageService();
 						if (!$edForm.certificateSID) {
 							store
 								.create('certificates', e.target.files[0])
 								.then((res) => {
 									if ('file' in res) $edForm.certificateSID = res.file.$id;
-									else toast.error('Failed to upload certificate')
+									else toast.error('Failed to upload certificate');
 								})
 								.finally(() => (edCertificateUploading = false));
 						} else {
@@ -143,7 +143,7 @@
 								.create('certificates', e.target.files[0])
 								.then((res) => {
 									if ('file' in res) $edForm.certificateSID = res.file.$id;
-									else toast.error('Failed to upload certificate')
+									else toast.error('Failed to upload certificate');
 								})
 								.finally(() => (edCertificateUploading = false));
 						}
@@ -152,17 +152,14 @@
 			</Label>
 		{/if}
 
-
-		<input type="hidden" name='userBiography' bind:value={$edForm.userBiography}>
+		<input type="hidden" name="userBiography" bind:value={$edForm.userBiography} />
 		{#if postingEdModal || edCertificateUploading}
-			<Button type="button" class="flex items-center gap-1" disabled
+			<Button type="button" class="flex items-center gap-1 mt-3" disabled
 				>{postingEdModal ? 'Posting education' : 'Uploading Certificate'}
 				<Spinner size={4} /></Button
 			>
 		{:else}
-			<Button
-				type="submit">Add education</Button
-			>
+			<Button class="mt-3" type="submit">Add education</Button>
 		{/if}
 	</form>
 </Modal>

@@ -18,7 +18,10 @@ export const vacancySchema = z.object({
 	otherInfo: z.string().optional(),
 	userProfile: z.string().default(''),
 	organization: z.string().default('')
-});
+}).refine(({deadline}) => new Date(deadline) > new Date(),{
+	message:'Deadline  should be in the future',
+	path: ['deadline']
+})
 
 const userLanguageSchema = z.object({
 	language: z.string(),
@@ -34,7 +37,13 @@ export const educationSchema = z.object({
 	isSuccessfullyCompleted: z.boolean().optional(),
 	certificateSID: z.string().optional(),
 	userBiography: z.string()
-});
+}).refine(({startDate, endDate}) => {
+	if(endDate) return new Date(endDate) > new Date(startDate);
+	else return true;
+},{
+	message:'End date cannot be earlier than the start date',
+	path: ['endDate']
+})
 
 const workExperienceSchema = z.object({
 	occupation: z.string(),

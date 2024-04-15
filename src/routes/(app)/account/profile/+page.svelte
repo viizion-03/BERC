@@ -49,10 +49,12 @@
 
 	const { form: deleteEdForm, enhance: deleteEdEnhance } = superForm(data.deleteEducationForm, {
 		invalidateAll: false,
-		onUpdated({form :f}) {
-			handleToast(f)
-			if(f.message.type ==='success'){
-				$form.userBiography.educations = $form.userBiography.educations.filter(ed => ed.$id !== f.data.educationId);
+		onUpdated({ form: f }) {
+			handleToast(f);
+			if (f.message.type === 'success') {
+				$form.userBiography.educations = $form.userBiography.educations.filter(
+					(ed) => ed.$id !== f.data.educationId
+				);
 			}
 		}
 	});
@@ -105,6 +107,16 @@
 	educations.then((res) => console.log('eds', res));
 
 	$: district = districts.filter((d) => d.value === $form.district)[0];
+
+	function toFormatedDate(dateString) {
+		const dateFormat = {
+			day: 'numeric',
+			month: 'long',
+			// weekday: 'short',
+			year: 'numeric'
+		};
+		return new Date(dateString).toLocaleDateString('en-us', dateFormat);
+	}
 </script>
 
 <Toaster />
@@ -354,7 +366,11 @@
 									<div class="flex-grow">
 										<p>{ed.qualification}</p>
 										<p>{ed.institution}</p>
-										<p>{ed.startDate} - {ed.endDate ? ed.endDate : 'Present'}</p>
+										<p>
+											{toFormatedDate(ed.startDate)} - {ed.endDate
+												? toFormatedDate(ed.endDate)
+												: 'Present'}
+										</p>
 
 										{#if ed.certificateSID}
 											<a
