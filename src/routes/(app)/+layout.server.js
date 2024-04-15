@@ -7,7 +7,7 @@ import { Query } from 'node-appwrite';
 // @ts-ignore
 export const load = async ({ locals,cookies }) => {
 	async function getVacancies() {
-		return new VacancyService({cookies}).list();
+		return new VacancyService({cookies}).listWithAvatars();
 	}
 
 	const getProfile = async () =>

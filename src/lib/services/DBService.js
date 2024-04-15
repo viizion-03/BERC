@@ -1,10 +1,6 @@
-import {
-	Databases,
-	Client, ID
-} from 'node-appwrite';
+import { Databases, Client, ID } from 'node-appwrite';
 import { config, mainDb, handleError, StorageService } from './appwrite';
 import { createSessionClient } from './appwrite-auth';
-
 
 export class DBService {
 	// client = new Client();
@@ -29,7 +25,7 @@ export class DBService {
 		// this.client.setProject(config.project);
 		this.databaseId = mainDb.databaseID;
 
-		const {db} = createSessionClient(event);
+		const { db } = createSessionClient(event);
 		this.db = db;
 	}
 	/**
@@ -82,23 +78,6 @@ export class DBService {
 		return this.db
 			.listDocuments(this.databaseId, this.collectionId, queryList)
 			.then((docs) => {
-				docs.documents.map((vacancy) => {
-					let vacancyLogo;
-					if (vacancy.userProfile) {
-						vacancyLogo = new StorageService().getFilePreview(
-							'avatars',
-							vacancy.userProfile.avatarSID
-						);
-					} else {
-						vacancyLogo = new StorageService().getFilePreview(
-							'logos',
-							vacancy.organization.logoSID
-						);
-					}
-
-					vacancy = { ...vacancy, vacancyLogo };
-
-				});
 				return { success: true, docs };
 			})
 			.catch((err) => handleError(err));

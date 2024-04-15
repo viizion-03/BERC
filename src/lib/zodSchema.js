@@ -97,7 +97,7 @@ export const profileSchema = z.object({
 	introAudioSID: z.string().optional(),
 	coverPhotoSID: z.string().optional(),
 	surname: z.string(),
-	userBiography: userLanguageSchema,
+	userBiography: userBiographySchema,
 	projects: z.array(z.string()),
 	userLanguages: z.array(userLanguageSchema),
 	socialMediaAccounts: z.array(z.string()),

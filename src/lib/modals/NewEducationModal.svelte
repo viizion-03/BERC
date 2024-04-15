@@ -30,6 +30,8 @@
 					case 'success':
 						toast.success(form.message.text ? form.message.text : 'Submission Successfull');
 
+						// console.log(form)
+						edList = [...edList, form.message.res.doc];
 						// reset the fields in the form and close the modal
 						$edForm.certificateSID = '';
 						$edForm.endDate = '';
@@ -38,6 +40,7 @@
 						$edForm.institution = '';
 						$edForm.isSuccessfullyCompleted = false;
 						educationModal = false;
+
 						break;
 					case 'error':
 						toast.error(
@@ -55,6 +58,7 @@
 	let educationFiles;
 	let postingEdModal = false;
 	let edCertificateUploading = false;
+	export let edList;
 	$edForm.userBiography = data.user.$id;
 
 </script>

@@ -28,7 +28,7 @@
 	import { StorageService } from '$lib/services/appwrite';
 	import NewEducationModal from '$lib/modals/NewEducationModal.svelte';
 	export let data;
-	const { profile } = data;
+	const { profile, educations } = data;
 
 	const { form, errors, message, constraints, enhance } = superForm(data.profileForm, {
 		validationMethod: 'onblur',
@@ -47,40 +47,30 @@
 		}
 	});
 
-	const {
-		form: edForm,
-		errors: edErrors,
-		message: edMessage,
-		constraints: edConstraints,
-		enhance: edEnhance
-	} = superForm(data.educationForm, {
-		validationMethod: 'onsubmit',
-		dataType: 'json',
-		onUpdated({ form }) {
-			if (form.message && form.message.type) {
-				switch (form.message.type) {
-					case 'success':
-						toast.success(form.message.text ? form.message.text : 'Submission Successfull');
-
-						// reset the fields in the form and close the modal
-						$edForm.certificateSID = '';
-						$edForm.endDate = '';
-						$edForm.startDate = '';
-						$edForm.qualification = '';
-						$edForm.institution = '';
-						$edForm.isSuccessfullyCompleted = false;
-						educationModal = false;
-						break;
-					case 'error':
-						toast.error(
-							form.message.text ? form.message.text : 'Invalid input(s), submission failed'
-						);
-						break;
-				}
+	const { form: deleteEdForm, enhance: deleteEdEnhance } = superForm(data.deleteEducationForm, {
+		invalidateAll: false,
+		onUpdated({form :f}) {
+			handleToast(f)
+			if(f.message.type ==='success'){
+				$form.userBiography.educations = $form.userBiography.educations.filter(ed => ed.$id !== f.data.educationId);
 			}
-			postingEdModal = false;
 		}
 	});
+
+	function handleToast(form) {
+		if (form.message && form.message.type) {
+			switch (form.message.type) {
+				case 'success':
+					toast.success(form.message.text ? form.message.text : 'Submission Successfull');
+					break;
+				case 'error':
+					toast.error(
+						form.message.text ? form.message.text : 'Invalid input(s), submission failed'
+					);
+					break;
+			}
+		}
+	}
 
 	//MODAL VALUES
 	let languageOptions = [
@@ -92,23 +82,13 @@
 		'Mandarin (Chinese)'
 	];
 	let languageModal = false;
-	let educationModal = true;
-	let educationFiles = [];
+	let educationModal = false;
 	let postingEdModal = false;
-	let educationForm;
 
 	let langObj = {
 		language: '',
 		proficiency: 'Beginner',
 		years: 0
-	};
-
-	let educationObj = {
-		qualification: '',
-		institution: '',
-		startDate: '',
-		endDate: '',
-		completedSuccessfully: false
 	};
 
 	profile.then((res) => {
@@ -122,12 +102,14 @@
 		}
 	});
 
+	educations.then((res) => console.log('eds', res));
+
 	$: district = districts.filter((d) => d.value === $form.district)[0];
 </script>
 
 <Toaster />
 
-<NewEducationModal bind:data bind:educationModal />
+<NewEducationModal bind:data bind:educationModal bind:edList={$form.userBiography.educations} />
 <!-- <div class="sticky top-0">
 	<SuperDebug data={$form.userLanguages} />
 </div> -->
@@ -359,11 +341,6 @@
 					<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
 						Professional Bio
 					</h5>
-					<!-- <div class="mb-4">
-						<Label for="occupation" class="mb-2">Occupation</Label>
-						<Input type="text" id="occupation" name="occupation" bind:value={$form.Occupation} />
-						<Helper color="red">{$errors.Occupation ? $errors.Occupation : ''}</Helper>
-					</div> -->
 
 					<div class="flex justify-between items-center mb-5">
 						<h4>Educations</h4>
@@ -396,9 +373,26 @@
 											</a>
 										{/if}
 									</div>
-									<Button color="dark" class="px-3">
-										<TrashBinSolid />
-									</Button>
+									<form
+										action="?/deleteEducation"
+										method="post"
+										use:deleteEdEnhance
+										on:submit={() => {
+											$deleteEdForm.educationId = ed.$id;
+											$deleteEdForm.certificateSID = ed.certificateSID;
+										}}
+									>
+										<input type="hidden" name="educationId" id="educationId" value={ed.$id} />
+										<input
+											type="hidden"
+											name="certificateSID"
+											id="certificateSID"
+											value={ed.certificateSID}
+										/>
+										<Button color="dark" class="px-3" type="submit">
+											<TrashBinSolid />
+										</Button>
+									</form>
 								</ListgroupItem>
 							{/each}
 						{/if}

@@ -5,14 +5,24 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 import { profileSchema, educationSchema } from '$lib/zodSchema.js';
 import { redirect } from 'sveltekit-flash-message/server';
+import { Query } from 'node-appwrite';
+import { StorageService } from '$lib/services/appwrite.js';
 
 export const load = async (event) => {
 	// @ts-ignore
 	const getProfile = async () => new UserProfileService(event).get(event.locals.user.$id);
+	const getEducations = async () => new EducationService(event).list();
 	const profileForm = await superValidate(zod(profileSchema));
 	const educationForm = await superValidate(zod(educationSchema));
+	const deleteEducationForm = await superValidate(zod(z.object({ educationId: z.string(),certificateSID: z.string().optional() })));
 
-	return { profile: getProfile(), profileForm, educationForm };
+	return {
+		profile: getProfile(),
+		educations: getEducations(),
+		profileForm,
+		educationForm,
+		deleteEducationForm
+	};
 };
 
 export const actions = {
@@ -53,6 +63,17 @@ export const actions = {
 					{ status: 500 }
 				);
 			});
+	},
 
+	deleteEducation: async (event) => {
+		const form = await superValidate(event.request, zod(z.object({ educationId: z.string() ,certificateSID: z.string().optional() })));
+		return new EducationService(event).delete(form.data.educationId).then((res) => {
+			if(form.data.certificateSID) new StorageService().delete('certificates', form.data.certificateSID);
+
+			if (res.success)
+				return message(form, { type: 'success', text: 'Education Deleted Successfully' });
+			else
+				return message(form, { type: 'error', text: 'Error deleting Education' }, { status: 500 });
+		});
 	}
 };

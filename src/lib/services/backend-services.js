@@ -43,7 +43,7 @@ export class UserProfileService extends DBService {
 	 * @property {SiteReference} siteReferences - References Written by the User for other Users
 	 */
 
-	constructor(event,omangPassport = '', firstname = '', surname = '', dob = '', nationality = '') {
+	constructor(event, omangPassport = '', firstname = '', surname = '', dob = '', nationality = '') {
 		super(event);
 		this.collectionId = mainDb.collections.userProfiles;
 		this.requiredAttributes = { omangPassport, firstname, dob, surname, nationality };
@@ -90,7 +90,7 @@ export class MessageService extends DBService {
 	 * @param {string} chatRoomId ID of the chatroom to send the message in
 	 * @param {string} senderId ID of the user sending the message
 	 */
-	constructor(event,type, senderId, chatRoomId) {
+	constructor(event, type, senderId, chatRoomId) {
 		super(event);
 		this.collectionId = mainDb.collections.messages;
 		this.requiredAttributes = { type, senderProfile: senderId, chatRoom: chatRoomId };
@@ -118,7 +118,7 @@ export class MessageService extends DBService {
 }
 
 export class ChatRoomService extends DBService {
-	constructor(event,name = '') {
+	constructor(event, name = '') {
 		super(event);
 		this.collectionId = mainDb.collections.chatRooms;
 		this.requiredAttributes = { name };
@@ -134,20 +134,20 @@ export class ForumCommentService extends DBService {
 	 * @property {number} likes - The number of likes of the forum comment.
 	 */
 
-	constructor(event,comment='', forumId ='', commentorId ='') {
+	constructor(event, comment = '', forumId = '', commentorId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.forumComments;
-		this.requiredAttributes = {comment, authorProfile: commentorId, forum: forumId}
+		this.requiredAttributes = { comment, authorProfile: commentorId, forum: forumId };
 	}
 
 	/**
 	 * Sets the Forum Comments collection Attributes for the object
-	 * @param {ForumComment |object} data 
+	 * @param {ForumComment |object} data
 	 */
-	setData(data){
-		this.data = {...this.data, ...data}
+	setData(data) {
+		this.data = { ...this.data, ...data };
 	}
-	
+
 	/**
 	 *
 	 * @param {string} forumCommentId Forum ID of post to be updated
@@ -192,7 +192,7 @@ export class ForumService extends DBService {
 	 * @property {UserProfile} authorProfile - The author profile of the forum.
 	 */
 
-	constructor(event,title = '', body = '', authorId = '') {
+	constructor(event, title = '', body = '', authorId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.forums;
 		this.requiredAttributes = { title, body, authorProfile: authorId };
@@ -319,6 +319,25 @@ export class VacancyService extends DBService {
 		super(event);
 		this.collectionId = mainDb.collections.vacancies;
 	}
+
+	async listWithAvatars() {
+		return this.list().then(({docs}) => {
+			docs.documents.map((vacancy) => {
+				let vacancyLogo;
+				if (vacancy.userProfile) {
+					vacancyLogo = new StorageService().getFilePreview(
+						'avatars',
+						vacancy.userProfile.avatarSID
+					);
+				} else {
+					vacancyLogo = new StorageService().getFilePreview('logos', vacancy.organization.logoSID);
+				}
+
+				vacancy = { ...vacancy, vacancyLogo };
+			});
+			return { success: true, docs };
+		});
+	}
 }
 
 export class NotificationService extends DBService {
@@ -340,7 +359,7 @@ export class SocialMediaAccountService extends DBService {
 	 */
 
 	/**@param {'organization'| 'user'|''} [ownerType=''] @param {string} profileId   */
-	constructor(event,platform = '', ownerType = '', link = '', profileId = '') {
+	constructor(event, platform = '', ownerType = '', link = '', profileId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.socialMediaAccounts;
 		if (ownerType === 'organization') this.requiredAttributes = { organization: profileId };
@@ -383,7 +402,7 @@ export class OrganizationService extends DBService {
 	 * @property {Notification[] | string[]} notifications - The notifications of the organization.
 	 */
 
-	constructor(event,name = '', location = '', district = '', description = '', userId = '') {
+	constructor(event, name = '', location = '', district = '', description = '', userId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.organizations;
 		this.requiredAttributes = {
@@ -503,7 +522,7 @@ export class UserLanguageService extends DBService {
 	 */
 
 	/** @param {'Beginner' | 'Intermediate' | 'Fluent' | 'Native' | ''} proficiency - The proficiency level. (required) */
-	constructor(event,language = '', proficiency = '', userId = '') {
+	constructor(event, language = '', proficiency = '', userId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.userLanguages;
 		this.requiredAttributes = { language, proficiency, userProfile: userId };
@@ -532,7 +551,7 @@ export class WorkExperienceService extends DBService {
 	 * @property {Biography | string} userBiography - The user biography associated with this work experience
 	 */
 
-	constructor(event,occupation = '', startDate = '', userBiography = '') {
+	constructor(event, occupation = '', startDate = '', userBiography = '') {
 		super(event);
 		this.collectionId = mainDb.collections.workExperiences;
 		this.requiredAttributes = { occupation, startDate, userBiography };
@@ -561,7 +580,7 @@ export class ProjectService extends DBService {
 	 * @property {UserProfile[] | string[]} userProfiles - The user profiles associated with the project.
 	 */
 
-	constructor(event,title = '', summary = '', userId = '') {
+	constructor(event, title = '', summary = '', userId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.projects;
 		this.requiredAttributes = { title, summary, creatorUID: userId, userProfiles: [userId] };
@@ -633,7 +652,7 @@ export class SignedReferenceService extends DBService {
 	 * @property {Biography | string} userBiography - The biography to which this reference is for
 	 */
 
-	constructor(event,authorFullname = '', userBiography = '') {
+	constructor(event, authorFullname = '', userBiography = '') {
 		super(event);
 		this.collectionId = mainDb.collections.signedReferences;
 		this.requiredAttributes = { authorFullname, userBiography };
@@ -683,7 +702,13 @@ export class SiteReferenceService extends DBService {
 
 	// /**@type {SiteReference | undefined} */
 	// data;
-	constructor(event,relationshipToCandidate = '', summary = '', authorProfile = '', userBiography = '') {
+	constructor(
+		event,
+		relationshipToCandidate = '',
+		summary = '',
+		authorProfile = '',
+		userBiography = ''
+	) {
 		super(event);
 		this.collectionId = mainDb.collections.siteReferences;
 		this.requiredAttributes = { relationshipToCandidate, summary, authorProfile, userBiography };
@@ -710,7 +735,7 @@ export class EducationService extends DBService {
 	 * @property {Biography | string} userBiography - The user biography associated with this education
 	 */
 
-	constructor(event,qualification = '', institution = '', startDate = '', biographyId = '') {
+	constructor(event, qualification = '', institution = '', startDate = '', biographyId = '') {
 		super(event);
 		this.collectionId = mainDb.collections.educations;
 		this.requiredAttributes = { qualification, institution, startDate, userBiography: biographyId };
@@ -762,7 +787,7 @@ export class UserBiographyService extends DBService {
 	 */
 
 	/**@param {string} userId  */
-	constructor(event,userId) {
+	constructor(event, userId) {
 		super(event);
 		this.collectionId = mainDb.collections.userBiographies;
 		this.requiredAttributes = { userProfile: userId };
