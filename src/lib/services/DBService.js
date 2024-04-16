@@ -1,6 +1,7 @@
 import { ID } from 'node-appwrite';
 import { mainDb, handleError } from './appwrite';
 import { createNodeClient } from './appwrite-auth';
+import { message } from 'sveltekit-superforms';
 
 export class DBService {
 	db;
@@ -40,6 +41,31 @@ export class DBService {
 				return { success: true, doc };
 			})
 			.catch((err) => handleError(err));
+	}
+
+	/**
+	 * Creates a record within the database and returns a message object to be used by Superforms
+	 * 
+	 * the data needs to be set using the Set Data function before using the function;
+	 * 
+	 * @param {object} form Superforms form object
+	 * @param {string} successText Text to show on successfull submission 
+	 * @param {string} errorText Text to show if something goes wrong 
+	 * @returns flash message containing the form object
+	 */
+	async formCreate(form, successText, errorText) {
+		return this.create()
+			.then((res) => {
+				if (res.success) {
+					// return message(form, { type: 'success', text: successText, res }, { status: 400 });
+					return message(form, { type: 'success', text: successText, res });
+				} else {
+					return message(form, { type: 'error', text: res.errorMessage }, { status: 400 });
+				}
+			})
+			.catch((e) => {
+				return message(form, { type: 'error', text: errorText }, { status: 500 });
+			});
 	}
 
 	/**

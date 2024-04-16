@@ -27,6 +27,7 @@
 	import { countries, districts } from '$lib/constants.js';
 	import { StorageService } from '$lib/services/appwrite';
 	import NewEducationModal from '$lib/modals/NewEducationModal.svelte';
+	import NewExpericneModal from '$lib/modals/NewExperienceModal.svelte';
 	export let data;
 	const { profile, educations } = data;
 
@@ -85,7 +86,7 @@
 	];
 	let languageModal = false;
 	let educationModal = false;
-	let postingEdModal = false;
+	let experienceModal = true;
 
 	let langObj = {
 		language: '',
@@ -122,6 +123,7 @@
 <Toaster />
 
 <NewEducationModal bind:data bind:educationModal bind:edList={$form.userBiography.educations} />
+<NewExpericneModal bind:data bind:experienceModal bind:expList={$form.userBiography.workExperiences} biographyId={data.user.$id}  />
 <!-- <div class="sticky top-0">
 	<SuperDebug data={$form.userLanguages} />
 </div> -->
@@ -414,8 +416,27 @@
 						{/if}
 					</Listgroup>
 				</Card>
+
+				<Card>
+					<div class="flex justify-between items-center mb-5">
+						<h4>Work Experiences</h4>
+						<Button on:click={() => (experienceModal = true)}>Add a work experience</Button>
+					</div>
+
+					<Listgroup>
+						{#if $form.userBiography.workExperiences}
+							{#each $form.userBiography.workExperiences as ex, i (ex.$id)}
+								<ListgroupItem class="flex items-start">
+									<p>{ex.occupation}</p>
+								</ListgroupItem>
+							{/each}
+						{/if}
+					</Listgroup>
+				</Card>
 			</div>
 		</form>
+
+
 	{:else}
 		<!-- else content here -->
 		<Alert color="red" class="shadow-lg">

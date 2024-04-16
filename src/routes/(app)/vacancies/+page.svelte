@@ -185,7 +185,7 @@
 							Add</Button
 						>
 					</div>
-					<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
+					<!-- <Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper> -->
 				</div>
 
 				<div>
@@ -216,7 +216,7 @@
 							Add</Button
 						>
 					</div>
-					<Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper>
+					<!-- <Helper color="red">{$errors.jobDescription ? $errors.jobDescription : ''}</Helper> -->
 				</div>
 
 				<div class="flex gap-2 max-h-40 overflow-y-hidden">

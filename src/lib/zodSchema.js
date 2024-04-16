@@ -1,27 +1,29 @@
 import { z } from 'zod';
 const requiredMessage = `field is required and cannot be empty`;
 
-export const vacancySchema = z.object({
-	profileType: z.string(),
-	jobTitle: z.string().min(1, requiredMessage),
-	location: z.string().min(1, requiredMessage),
-	district: z.string().min(1, requiredMessage),
-	isFulltime: z.boolean().default(true),
-	industryTags: z.array(z.string().min(1, requiredMessage)),
-	requirements: z.array(z.string()),
-	yearsOfExperience: z.number().min(0).max(70).default(0),
-	jobDescription: z.string().min(1, requiredMessage),
-	deadline: z.string(),
-	salary: z.number().min(0),
-	supportEmail: z.string(),
-	responsibilities: z.array(z.string()),
-	otherInfo: z.string().optional(),
-	userProfile: z.string().default(''),
-	organization: z.string().default('')
-}).refine(({deadline}) => new Date(deadline) > new Date(),{
-	message:'Deadline  should be in the future',
-	path: ['deadline']
-})
+export const vacancySchema = z
+	.object({
+		profileType: z.string(),
+		jobTitle: z.string().min(1, requiredMessage),
+		location: z.string().min(1, requiredMessage),
+		district: z.string().min(1, requiredMessage),
+		isFulltime: z.boolean().default(true),
+		industryTags: z.array(z.string().min(1, requiredMessage)),
+		requirements: z.array(z.string()),
+		yearsOfExperience: z.number().min(0).max(70).default(0),
+		jobDescription: z.string().min(1, requiredMessage),
+		deadline: z.string(),
+		salary: z.number().min(0),
+		supportEmail: z.string(),
+		responsibilities: z.array(z.string()),
+		otherInfo: z.string().optional(),
+		userProfile: z.string().default(''),
+		organization: z.string().default('')
+	})
+	.refine(({ deadline }) => new Date(deadline) > new Date(), {
+		message: 'Deadline  should be in the future',
+		path: ['deadline']
+	});
 
 const userLanguageSchema = z.object({
 	language: z.string(),
@@ -29,30 +31,47 @@ const userLanguageSchema = z.object({
 	years: z.number()
 });
 
-export const educationSchema = z.object({
-	qualification: z.string().min(1, requiredMessage),
-	institution: z.string().min(1, requiredMessage),
-	startDate: z.string().min(1, requiredMessage),
-	endDate: z.string().optional(),
-	isSuccessfullyCompleted: z.boolean().optional(),
-	certificateSID: z.string().optional(),
-	userBiography: z.string()
-}).refine(({startDate, endDate}) => {
-	if(endDate) return new Date(endDate) > new Date(startDate);
-	else return true;
-},{
-	message:'End date cannot be earlier than the start date',
-	path: ['endDate']
-})
+export const educationSchema = z
+	.object({
+		qualification: z.string().min(1, requiredMessage),
+		institution: z.string().min(1, requiredMessage),
+		startDate: z.string().min(1, requiredMessage),
+		endDate: z.string().optional(),
+		isSuccessfullyCompleted: z.boolean().optional(),
+		certificateSID: z.string().optional(),
+		userBiography: z.string()
+	})
+	.refine(
+		({ startDate, endDate }) => {
+			if (endDate) return new Date(endDate) > new Date(startDate);
+			else return true;
+		},
+		{
+			message: 'End date cannot be earlier than the start date',
+			path: ['endDate']
+		}
+	);
 
-const workExperienceSchema = z.object({
-	occupation: z.string(),
-	organization: z.string(),
-	startstring: z.string(),
-	endstring: z.string().optional(),
-	achievments: z.array(z.string()),
-	skillsAquired: z.array(z.string())
-});
+export const workExperienceSchema = z
+	.object({
+		occupation: z.string().min(1, requiredMessage),
+		organization: z.string(),
+		startDate: z.string().min(1, requiredMessage),
+		endDate: z.string().optional(),
+		achievments: z.array(z.string()),
+		skillsAquired: z.array(z.string()),
+		userBiography: z.string()
+	})
+	.refine(
+		({ startDate, endDate }) => {
+			if (endDate) return new Date(endDate) > new Date(startDate);
+			else return true;
+		},
+		{
+			message: 'End date cannot be earlier than the start date',
+			path: ['endDate']
+		}
+	);
 
 const siteReferenceSchema = z.object({
 	relationshipToCandistring: z.string(),
